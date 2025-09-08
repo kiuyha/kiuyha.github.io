@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function ImagesSlider({
 	images,
@@ -10,31 +10,59 @@ export default function ImagesSlider({
 }) {
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [imageLoading, setImageLoading] = useState(true);
+	const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+	const startInterval = () => {
+        // Clear any existing timer
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+        }
+        // Set a new timer
+        intervalRef.current = setInterval(() => {
+            // avoid dependency issues since if we call handleNext directly it will cause an infinite loop
+            setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+        }, 10000);
+    };
 
 	const handlePrevious = () => {
 		setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+		startInterval();
 	};
 
 	// Function to show the next image
 	const handleNext = () => {
 		setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+		startInterval();
 	};
+
+	const goToSlide = (index: number) => {
+		setCurrentIndex(index);
+		startInterval();
+	}
 
 	useEffect(() => {
 		setImageLoading(true);
 	}, [currentIndex]);
 
 	useEffect(() => {
-		setCurrentIndex(0);
-		setImageLoading(true);
-		const automaticChange = setInterval(() => {
-			handleNext();
-		}, 10000);
+        if (images && images.length > 0) {
+            setCurrentIndex(0);
+            setImageLoading(true);
+            startInterval();
 
-		return () => {
-			clearInterval(automaticChange);
-		};
-	}, [images]);
+            // Preload images for a smoother experience
+            images.forEach((src) => {
+                const img = new Image();
+                img.src = src;
+            });
+        }
+        
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
+    }, [images]);
 
 	if (!images || images.length === 0) {
 		return null;
@@ -48,7 +76,6 @@ export default function ImagesSlider({
 			)}
 
 			<img
-				key={currentIndex}
 				src={images[currentIndex] || placeholderImage}
 				alt="project"
 				width={400}
@@ -96,7 +123,7 @@ export default function ImagesSlider({
 					<button
 						key={index}
 						aria-label={`Go to slide ${index + 1}`}
-						onClick={() => setCurrentIndex(index)}
+						onClick={() => goToSlide(index)}
 						className={`cursor-pointer w-3 h-3 hover:bg-white rounded-full transition-colors duration-300
 							${index === currentIndex ? "bg-white" : "bg-white/70"}
 						`}
