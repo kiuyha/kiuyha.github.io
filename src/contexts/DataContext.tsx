@@ -14,13 +14,16 @@ import {
 import { useErrorBoundary } from "react-error-boundary";
 import { fetchContributions } from "../lib/github";
 import {
+	defaultArticles,
 	defaultContributions,
 	type Achievement,
+	type Articles,
 	type Contributions,
 	type Project,
 	type SupportedLang,
 	type Translations,
 } from "../lib/schemas";
+import { fetchArticles } from "../lib/medium";
 
 interface Content {
 	supportedLangs: SupportedLang[];
@@ -28,6 +31,7 @@ interface Content {
 	achievements: Achievement[];
 	translations: Translations;
 	contributions: Contributions;
+	articles: Articles;
 	currentLang: string;
 }
 
@@ -46,6 +50,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 		achievements: [],
 		translations: {},
 		contributions: defaultContributions,
+		articles: defaultArticles,
 		currentLang: "",
 	});
 	const [isLoading, setIsLoading] = useState(true);
@@ -54,12 +59,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
 	useEffect(() => {
 		const loadData = async () => {
 			try {
-				const [supportedLangs, projects, achievements, contributions] =
+				const [supportedLangs, projects, achievements, contributions, articles] =
 					await Promise.all([
 						fetchSupportedLangs(),
 						fetchProject(),
 						fetchAchievements(),
 						fetchContributions(),
+						fetchArticles(),
 					]);
 
 				setContent((prev) => ({
@@ -68,6 +74,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 					projects,
 					achievements,
 					contributions,
+					articles,
 				}));
 			} catch (erorr) {
 				console.error("Error fetching data:", erorr);

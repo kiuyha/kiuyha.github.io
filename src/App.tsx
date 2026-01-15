@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 import Footer from "./components/Footer";
 import Achievements from "./pages/Achievements";
 import Contributions from "./pages/Contributions";
+import Articles from "./pages/Articles";
 
 // for route management
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
 				<Route index element={<Profile />} />
 				<Route path="achievements" element={<Achievements />} />
 				<Route path="contributions" element={<Contributions />} />
+				<Route path="articles" element={<Articles />} />
 				<Route
 					path="*"
 					element={

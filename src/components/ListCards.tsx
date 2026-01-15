@@ -23,7 +23,7 @@ interface ListCardsProps<TData extends Record<string, unknown>> {
 	dataSet: TData[];
 	searchConfig?: {
 		placeholder: string;
-		fieldSearch: keyof TData;
+		fieldSearch: keyof TData | (keyof TData)[];
 	};
 	filterConfig: {
 		canReset?: boolean;
@@ -31,7 +31,6 @@ interface ListCardsProps<TData extends Record<string, unknown>> {
 			name: string;
 			label: string;
 			ariaLabel?: string;
-			defaultValue?: string;
 			options: {
 				label: string;
 				value: string;
@@ -67,10 +66,7 @@ export default function ListCards<TData extends Record<string, unknown>>({
 	modal,
 }: ListCardsProps<TData>) {
 	const titleCardKey =
-		cardConfig &&
-		((cardConfig.titleField || searchConfig?.fieldSearch) as
-			| string
-			| undefined);
+		cardConfig && (cardConfig.titleField as string | undefined);
 	const [search, setSearch] = useState("");
 	const groupedSelectFields = useMemo(() => {
 		const result = [];
@@ -124,9 +120,15 @@ export default function ListCards<TData extends Record<string, unknown>>({
 
 			const inSearch =
 				search === "" ||
-				(data[searchConfig?.fieldSearch || "name"] as string)
-					.toLowerCase()
-					.includes(search.toLowerCase());
+				(Array.isArray(searchConfig?.fieldSearch)
+					? searchConfig.fieldSearch.some((field) =>
+							(data[field] as string)
+								.toLowerCase()
+								.includes(search.toLowerCase()),
+						)
+					: (data[searchConfig?.fieldSearch || "name"] as string)
+							.toLowerCase()
+							.includes(search.toLowerCase()));
 
 			return inFilter && inSearch;
 		});
@@ -228,14 +230,23 @@ export default function ListCards<TData extends Record<string, unknown>>({
 								className={`min-w-0 flex-1 text-sm lg:text-base truncate cursor-pointer px-2 py-2 font-semibold uppercase h-full dark:border-zinc-600 outline-none
 									${searchConfig ? "lg:border-l-4" : ""} ${index === 1 ? "border-l-4" : ""}`}
 							>
-								<option value="" className="dark:bg-zinc-900">
-									{(field.defaultValue || field.label)
-										.replace("_", " ")
-										.toUpperCase()}
-								</option>
+								{field.name !== "sort" && (
+									<option
+										value=""
+										className="dark:bg-zinc-900"
+									>
+										{field.label
+											.replace("_", " ")
+											.toUpperCase()}
+									</option>
+								)}
 
 								{field.options.map((option, index) => (
-									<option key={index} value={option.value} className="dark:bg-zinc-900">
+									<option
+										key={index}
+										value={option.value}
+										className="dark:bg-zinc-900"
+									>
 										{option.label
 											.replace("_", " ")
 											.toUpperCase()}
@@ -368,7 +379,7 @@ function Card<T extends Record<string, unknown>>({
 						(data?.[cardConfig.imageField] as string) ||
 						cardConfig.placeholderImage
 					}
-					alt="project"
+					alt="Card"
 					width={400}
 					height={250}
 					loading="lazy"

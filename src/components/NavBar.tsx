@@ -1,5 +1,5 @@
 import { motion, type Variants } from "framer-motion";
-import { FileBadge, GitBranch, User } from "lucide-react";
+import { FileBadge, GitBranch, User, BookOpen } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useData } from "../contexts/DataContext";
 import { useEffect, useRef, useState } from "react";
@@ -56,6 +56,11 @@ const getMenus = (translations: Record<string, string>) => [
 		name: translations?.["contributions"] || "Contributions",
 		path: "contributions",
 		Icon: GitBranch,
+	},
+	{
+		name: translations?.["articles"] || "Articles",
+		path: "articles",
+		Icon: BookOpen,
 	},
 ];
 

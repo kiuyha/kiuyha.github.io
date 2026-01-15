@@ -359,7 +359,7 @@ function Projects() {
 	} = useData();
 	const [type, setType] = useState("");
 	const [techStack, setTechStack] = useState("");
-	const [sort, setSort] = useState("");
+	const [sort, setSort] = useState("newest");
 	const types = useMemo(() => {
 		return [...new Set(projects.map((project) => project.type))].sort();
 	}, [projects]);
@@ -405,10 +405,13 @@ function Projects() {
 					},
 					{
 						name: "sort",
-						label: "sort by (default: newest)",
+						label: sorting?.["sort-by"] || "Sort By",
 						ariaLabel: "sort projects by",
-						defaultValue: sorting?.["newest"] || "newest",
 						options: [
+							{
+								label: sorting?.["newest"] || "newest",
+								value: "newest",
+							},
 							{
 								label: sorting?.["oldest"] || "Oldest",
 								value: "oldest",
@@ -434,6 +437,7 @@ function Projects() {
 				],
 			}}
 			cardConfig={{
+				titleField: "name",
 				imageField: "thumbnail",
 				placeholderImage: "/placeholder_project.avif",
 				buttons: {

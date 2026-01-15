@@ -478,7 +478,7 @@ function Repositories() {
 		translations: { contributions: translations, sorting },
 	} = useData();
 	const [language, setLanguage] = useState("");
-	const [sort, setSort] = useState("");
+	const [sort, setSort] = useState("createdAt-desc");
 	const languages = useMemo(() => {
 		return [
 			...new Set(
@@ -496,7 +496,7 @@ function Repositories() {
 			searchConfig={{
 				placeholder:
 					translations?.["search-placeholder"] || "Search by name",
-				fieldSearch: "name",
+				fieldSearch: ["name", "description"],
 			}}
 			filterConfig={{
 				canReset: true,
@@ -514,7 +514,7 @@ function Repositories() {
 					},
 					{
 						name: "sort",
-						label: sorting?.["sort-by"] || "sort by",
+						label: sorting?.["sort-by"] || "Sort By",
 						ariaLabel: "sort projects by",
 						options: [
 							{

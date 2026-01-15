@@ -24,7 +24,7 @@ export default function Achievements() {
 	const [category, setCategory] = useState("");
 	const [scope, setScope] = useState("");
 	const [skill, setSkill] = useState("");
-	const [sort, setSort] = useState("");
+	const [sort, setSort] = useState("newest");
 	const types = useMemo(() => {
 		return [
 			...new Set(achievements.map((achievement) => achievement.type)),
@@ -106,10 +106,13 @@ export default function Achievements() {
 					},
 					{
 						name: "sort",
-						label: "sort by (default: newest)",
+						label: sorting?.["sort-by"] || "Sort By",
 						ariaLabel: "sort projects by",
-						defaultValue: sorting?.["newest"] || "newest",
 						options: [
+							{
+								label: sorting?.["newest"] || "newest",
+								value: "newest",
+							},
 							{
 								label: sorting?.["oldest"] || "Oldest",
 								value: "oldest",

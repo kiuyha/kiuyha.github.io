@@ -106,9 +106,55 @@ export const defaultContributions: Contributions = {
 	repositories: [],
 };
 
+export const ArticlesSchema = z.object({
+	status: z.literal("ok"),
+	items: z.array(
+		z.object({
+			guid: z.string(),
+			title: z.string(),
+			categories: z.array(z.string()),
+			author: z.string(),
+			pubDate: z.string(),
+			link: z.string(),
+			description: z.string(),
+			image: z.optional(z.string()),
+		})
+	),
+}).transform((data) => {
+	return {
+		...data,
+		items: data.items.map((item) => ({
+			...item,
+			description: item.description
+				.replace(/<[^>]+>/g, "")
+				.replace(/&amp;/g, "&")
+				.replace(/&lt;/g, "<")
+				.replace(/&gt;/g, ">")
+				.replace(/&quot;/g, '"')
+				.replace(/&apos;/g, "'")
+				.replace(/&nbsp;/g, " ")
+				.replace(/&copy;/g, "(c)")
+				.replace(/&reg;/g, "(r)")
+				.substring(0, 300) + "...",
+			image: getFirstImage(item.description),
+		})),
+	};
+})
+
+function getFirstImage (htmlContent: string) {
+	const match = htmlContent.match(/<img[^>]+src="([^">]+)"/);
+	return match ? match[1] : "/images/placeholder_article.avif";
+};
+
+export const defaultArticles: Articles = {
+	status: "ok",
+	items: [],
+}
+
 export type Project = z.infer<typeof ProjectSchema>;
 export type Achievement = z.infer<typeof AchievementSchema>;
 export type SupportedLang = z.infer<typeof SupportedLangSchema>;
 export type Translations = z.infer<typeof TranslationsSchema>;
 export type Contributions = z.infer<typeof ContributionsSchema>;
 export type LanguagesRepo = z.infer<typeof LanguagesRepoSchema>;
+export type Articles = z.infer<typeof ArticlesSchema>;
