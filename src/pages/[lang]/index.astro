@@ -1,0 +1,15 @@
+---
+import MainLayout from '../../layouts/MainLayout.astro';
+import Profile from '../../views/Profile';
+import { getSharedStaticPaths, getPageData } from '../../lib/astro';
+
+export const getStaticPaths = getSharedStaticPaths;
+
+const { lang } = Astro.params;
+const { langInfo } = Astro.props;
+const data = await getPageData(lang, langInfo);
+---
+
+<MainLayout initialData={data}>
+    <Profile client:load data={data} />
+</MainLayout>

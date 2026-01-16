@@ -1,13 +1,15 @@
 # Portfolio Website
 
 
-This is web created using Vite and React. You can test it in <a href="https://kiuyha.my.id" target="_blank">kiuyha.my.id</a>
+This is web created using AstroJS and React. You can test it in <a href="https://kiuyha.my.id" target="_blank">kiuyha.my.id</a>
 
 ## Features
 - **Neobrutalist UI**. This website use neobrutalist UI.
 - **Responsive**. This website is responsive for all screen size.
 - **Google Spreadsheet Data**. You can use google spreadsheet as database.
 - **Integrate Github Contribution**. You can show your github contribution in the website.
+- **SEO Friendly**. Unlike using pure Vite, this website use AstroJS to make the HTML code to make crawels easier to index.
+- **Lightweight**. The website utilize the AstroJS islands to make the website lightweight.
 
 ## Setup for your own
 This tutorial will guide you how to setup this project for your own using github pages.

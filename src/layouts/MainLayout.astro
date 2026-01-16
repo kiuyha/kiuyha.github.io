@@ -1,0 +1,60 @@
+---
+import Footer from "../components/Footer";
+import "../index.css";
+import Shell from "./Shell";
+import { ClientRouter } from 'astro:transitions';
+
+const {
+	title = `${import.meta.env.VITE_FULL_NAME} (${import.meta.env.VITE_NICKNAME}) | ${import.meta.env.VITE_TITLE}`,
+	description = `This is a web for ${import.meta.env.VITE_FULL_NAME} (${import.meta.env.VITE_NICKNAME}) portfolio`,
+	image = "/thumbnails/profile.png",
+	initialData,
+} = Astro.props;
+
+const siteUrl = import.meta.env.VITE_WEBSITE_LINK;
+const githubApi = import.meta.env.VITE_GITHUB_API_LINK;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+		<title>{title}</title>
+
+		<meta name="author" content="Kiuyha" />
+		<link rel="author" href="https://github.com/kiuyha" />
+		<meta name="description" content={description} />
+
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="profile" />
+		<meta property="og:image" content={new URL(image, siteUrl)} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+
+		<link rel="preconnect" href="https://docs.google.com" crossorigin />
+		<link rel="preconnect" href={githubApi} crossorigin />
+		<link rel="preconnect" href="https://api.rss2json.com" crossorigin />
+
+		<ClientRouter />
+	</head>
+	<body class="bg-primary text-black dark:text-white relative min-h-screen">
+		{
+			initialData ? (
+				<>
+					<Shell client:load initialData={initialData} transition:persist/>
+					<main class="pt-25 pb-8 px-3 md:px-8">
+						<slot />
+					</main>
+					<Footer />
+				</>
+			) : (
+				<slot/>
+			)
+		}
+	</body>
+</html>

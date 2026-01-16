@@ -1,15 +1,15 @@
 import { useMemo, useState } from "react";
 import ListCards from "../components/ListCards";
-import { useData } from "../contexts/DataContext";
+import { type Data } from "../contexts/DataContext";
 import { Newspaper, Calendar, User, Tag } from "lucide-react";
 import { motion } from "framer-motion";
 import type { Articles } from "../lib/schemas";
 
-export default function Articles() {
+export default function Articles({ data }: { data: Data }) {
 	const {
 		translations: { articles: translations, sorting },
 		articles,
-	} = useData();
+	} = data;
 	const [category, setCategory] = useState("");
 	const [sort, setSort] = useState("createdAt-desc");
 	const categories = useMemo(() => {
@@ -180,7 +180,7 @@ function MediumCard<T extends Articles["items"][number]>({
                             ${imageLoading ? "opacity-0" : "opacity-100"}`}
 						onError={(e) => {
 							setImageLoading(false);
-							e.currentTarget.src = "/placeholder_article.avif";
+							e.currentTarget.src = "/placeholders/article.avif";
 						}}
 						onLoad={() => setImageLoading(false)}
 					/>
@@ -215,7 +215,7 @@ function MediumCard<T extends Articles["items"][number]>({
 				<div className="flex items-center gap-2">
 					<Calendar size={20} />
 					<span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
-						{new Date(data.pubDate).toLocaleString(undefined, {
+						{new Date(data.pubDate).toLocaleString("en-US", {
 							dateStyle: "medium",
 							timeStyle: "short",
 						})}

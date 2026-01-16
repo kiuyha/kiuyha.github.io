@@ -13,28 +13,31 @@ const ThemeContext = createContext<{
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
 	const [darkMode, setDarkMode] = useState<boolean>(
-		localStorage.getItem("theme") === "dark",
+		typeof window !== "undefined" &&
+			localStorage.getItem("theme") === "dark",
 	);
 
-	// Set the initial theme
 	useEffect(() => {
-		const theme = darkMode ? "dark" : "light";
-		document.documentElement.classList.toggle("dark", darkMode);
-		localStorage.setItem("theme", theme);
-	}, [darkMode]);
+		const setTheme = () =>
+			document.documentElement.classList.toggle("dark", darkMode);
 
-	// Listen for system theme changes
-	useEffect(() => {
-		const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+		setTheme();
+		localStorage.setItem("theme", darkMode ? "dark" : "light");
 
-		const handleThemeChange = (e: MediaQueryListEvent) => {
+		// Re-apply class after navigation
+		document.addEventListener("astro:after-swap", setTheme);
+
+		// Listen for System Changes
+		const media = window.matchMedia("(prefers-color-scheme: dark)");
+		const onSystemChange = (e: MediaQueryListEvent) =>
 			setDarkMode(e.matches);
-		};
+		media.addEventListener("change", onSystemChange);
 
-		mediaQuery.addEventListener("change", handleThemeChange);
-		return () =>
-			mediaQuery.removeEventListener("change", handleThemeChange);
-	}, []);
+		return () => {
+			document.removeEventListener("astro:after-swap", setTheme);
+			media.removeEventListener("change", onSystemChange);
+		};
+	}, [darkMode]);
 
 	return (
 		<ThemeContext.Provider value={{ darkMode, setDarkMode }}>

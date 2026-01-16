@@ -13,16 +13,18 @@ import {
 } from "./schemas";
 
 const SPREADSHEET_ID = import.meta.env.VITE_SPREADSHEET_ID;
-function fetchData(sheetName: string): Promise<Record<string, unknown>[]> {
+async function fetchData(sheetName: string): Promise<Record<string, unknown>[]> {
 	const sheetUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${sheetName}`;
+	const response = await fetch(sheetUrl);
+	const csvText = await response.text();
+
 	return new Promise((resolve, reject) => {
-		Papa.parse(sheetUrl, {
-			download: true,
+		Papa.parse(csvText, {
 			header: true,
 			complete: (results) => {
 				resolve(results.data as Record<string, unknown>[]);
 			},
-			error: (error) => {
+			error: (error: Error) => {
 				console.error(`Error fetching sheet "${sheetName}":`, error);
 				reject(error);
 			},

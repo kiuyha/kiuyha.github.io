@@ -1,0 +1,14 @@
+---
+import "../index.css";
+import { fetchSupportedLangs } from "../lib/sheets";
+import LanguageRedirector from "../components/LanguageRedirector";
+import MainLayout from "../layouts/MainLayout.astro";
+
+const supportedLangs = await fetchSupportedLangs();
+---
+<MainLayout>
+    <LanguageRedirector
+        client:only="react"
+        supportedLangs={supportedLangs}
+    />
+</MainLayout>

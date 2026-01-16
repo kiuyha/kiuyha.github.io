@@ -1,0 +1,13 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import ErrorPage from "../views/ErrorPage";
+
+---
+
+<MainLayout title="Page not found">
+	<ErrorPage
+		client:load
+		errorCode="404"
+		error={new Error("Page not found")}
+	/>
+</MainLayout>

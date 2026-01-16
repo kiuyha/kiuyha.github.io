@@ -18,7 +18,7 @@ export default function Footer() {
 					aria-label="see my github profile"
 				>
 					<img
-						src="/github.svg"
+						src="/icons/github.svg"
 						alt="github"
 						width={25}
 						height={25}
@@ -34,7 +34,7 @@ export default function Footer() {
 					aria-label="see my linkedin profile"
 				>
 					<img
-						src="/linkedin.svg"
+						src="/icons//linkedin.svg"
 						alt="linkedin"
 						width={25}
 						height={25}
@@ -50,7 +50,7 @@ export default function Footer() {
 					aria-label="see my medium articles"
 				>
 					<img
-						src="/medium.svg"
+						src="/icons/medium.svg"
 						alt="medium"
 						width={25}
 						height={25}
@@ -67,13 +67,7 @@ export default function Footer() {
 
 				<AnimatePresence>
 					{showEmailModal && (
-						<EmailModal
-							close={() => setShowEmailModal(false)}
-							// email={
-							// 	details?.["personal-info-email-value"] ||
-							// 	"ketutshridhara@gmail.com"
-							// }
-						/>
+						<EmailModal close={() => setShowEmailModal(false)} />
 					)}
 				</AnimatePresence>
 			</div>
@@ -105,7 +99,7 @@ function EmailModal({ close }: { close: () => void }) {
 			blockHeadless: true,
 			limitRate: {
 				throttle: 1000,
-			}
+			},
 		});
 
 		try {
@@ -201,13 +195,28 @@ function EmailModal({ close }: { close: () => void }) {
 					<AnimatePresence mode="popLayout">
 						{isAnonymous ? (
 							<div className="hidden">
-								<input type="text" name="name" value="Anonymous" readOnly hidden />
-								<input type="text" name="email" value="no-reply@anonymous.com" readOnly hidden />
+								<input
+									type="text"
+									name="name"
+									value="Anonymous"
+									readOnly
+									hidden
+								/>
+								<input
+									type="text"
+									name="email"
+									value="no-reply@anonymous.com"
+									readOnly
+									hidden
+								/>
 							</div>
 						) : (
 							<div className="flex flex-col md:flex-row gap-4">
 								<div className="flex flex-col gap-1 flex-1">
-									<label htmlFor="name" className="font-bold text-xs uppercase dark:text-zinc-300">
+									<label
+										htmlFor="name"
+										className="font-bold text-xs uppercase dark:text-zinc-300"
+									>
 										Your Name
 									</label>
 									<div className="flex items-center border-2 border-zinc-900 dark:border-zinc-600 bg-white dark:bg-zinc-800">
@@ -225,7 +234,10 @@ function EmailModal({ close }: { close: () => void }) {
 									</div>
 								</div>
 								<div className="flex flex-col gap-1 flex-1">
-									<label htmlFor="email" className="font-bold text-xs uppercase dark:text-zinc-300">
+									<label
+										htmlFor="email"
+										className="font-bold text-xs uppercase dark:text-zinc-300"
+									>
 										Your Email
 									</label>
 									<div className="flex items-center border-2 border-zinc-900 dark:border-zinc-600 bg-white dark:bg-zinc-800">
@@ -248,7 +260,10 @@ function EmailModal({ close }: { close: () => void }) {
 
 					{/* Subject Field */}
 					<div className="flex flex-col gap-1">
-						<label htmlFor="subject" className="font-bold text-xs uppercase dark:text-zinc-300">
+						<label
+							htmlFor="subject"
+							className="font-bold text-xs uppercase dark:text-zinc-300"
+						>
 							Subject
 						</label>
 						<input
@@ -262,7 +277,10 @@ function EmailModal({ close }: { close: () => void }) {
 
 					{/* Message Field */}
 					<div className="flex flex-col gap-1">
-						<label htmlFor="message" className="font-bold text-xs uppercase dark:text-zinc-300">
+						<label
+							htmlFor="message"
+							className="font-bold text-xs uppercase dark:text-zinc-300"
+						>
 							Message
 						</label>
 						<textarea

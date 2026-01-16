@@ -3,7 +3,6 @@ import { Moon, Sun, Languages, Check } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "../contexts/ThemeContext";
 import { useData } from "../contexts/DataContext";
-import { Link, useLocation } from "react-router-dom";
 
 export default function Header() {
 	return (
@@ -23,7 +22,8 @@ function LanguageSwitcher() {
 	const { supportedLangs, currentLang } = useData();
 	const [isOpen, setIsOpen] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
-	const currentPath = useLocation().pathname;
+	const currentPath =
+		typeof window !== "undefined" && window.location.pathname;
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -35,9 +35,8 @@ function LanguageSwitcher() {
 			}
 		};
 		document.addEventListener("mousedown", handleClickOutside);
-		return () => {
+		return () =>
 			document.removeEventListener("mousedown", handleClickOutside);
-		};
 	}, [dropdownRef]);
 
 	return (
@@ -66,12 +65,16 @@ function LanguageSwitcher() {
 						aria-labelledby="language-menu-button"
 					>
 						{supportedLangs.map(({ code, name }) => (
-							<Link
+							<a
 								key={code}
-								to={currentPath.replace(
-									`/${currentLang}`,
-									`/${code}`,
-								)}
+								href={
+									currentPath
+										? currentPath.replace(
+												`/${currentLang}`,
+												`/${code}`,
+											)
+										: `/${code}`
+								}
 								className="w-full flex items-center justify-between gap-2 rounded-md px-3 py-2 text-sm text-gray-700 dark:text-gray-200 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-700"
 								role="menuitem"
 							>
@@ -82,7 +85,7 @@ function LanguageSwitcher() {
 										className="text-blue-500 dark:text-blue-300"
 									/>
 								)}
-							</Link>
+							</a>
 						))}
 					</motion.div>
 				)}

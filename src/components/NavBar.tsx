@@ -1,6 +1,5 @@
 import { motion, type Variants } from "framer-motion";
 import { FileBadge, GitBranch, User, BookOpen } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
 import { useData } from "../contexts/DataContext";
 import { useEffect, useRef, useState } from "react";
 
@@ -9,14 +8,23 @@ export default function NavBar() {
 		currentLang,
 		translations: { navbar: translations },
 	} = useData();
-	const basePath = useLocation().pathname.split("/")?.[2] || "";
-
-	const [isDesktop, setIsDekstop] = useState(window.innerWidth >= 768);
+	const [basePath, setBasePath] = useState("");
+	const [isDesktop, setIsDekstop] = useState<boolean | null>(null);
 
 	useEffect(() => {
 		const handleResize = () => setIsDekstop(window.innerWidth >= 768);
+		const updateBasePath = () =>
+			setBasePath(window.location.pathname.split("/")?.[2] || "");
+
+		handleResize();
+		updateBasePath();
 		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
+		document.addEventListener("astro:page-load", updateBasePath);
+
+		return () => {
+			window.removeEventListener("resize", handleResize);
+			document.removeEventListener("astro:page-load", updateBasePath);
+		};
 	}, []);
 
 	return (
@@ -119,9 +127,9 @@ function DekstopNavBar({
 						</span>
 					</motion.div>
 
-					<Link
+					<a
 						aria-label={name}
-						to={`/${currentLang}${path ? `/${path}` : ""}`}
+						href={`/${currentLang}${path ? `/${path}` : ""}`}
 						className={`md:px-2 md:py-2.5 rounded flex flex-col items-center transition-all duration-300
                                 ${
 									basePath === path
@@ -131,7 +139,7 @@ function DekstopNavBar({
                                 `}
 					>
 						<Icon size={30} />
-					</Link>
+					</a>
 				</motion.li>
 			))}
 		</ul>
@@ -178,20 +186,19 @@ function MobileNavBar({
 			<ul className="flex items-center justify-between mb-2">
 				{getMenus(translations).map(({ name, path, Icon }) => (
 					<motion.li key={name}>
-						<Link
+						<a
 							ref={(el) => {
 								menusRef.current[path] = el;
 							}}
 							aria-label={name}
-							to={`/${currentLang}${path ? `/${path}` : ""}`}
+							href={`/${currentLang}${path ? `/${path}` : ""}`}
 							className="flex flex-col items-center"
 						>
 							<Icon size={25} />
 							<span className="text-sm font-bold">{name}</span>
-						</Link>
+						</a>
 					</motion.li>
 				))}
-
 			</ul>
 			{/* Tab Indicator for small screens */}
 			<div

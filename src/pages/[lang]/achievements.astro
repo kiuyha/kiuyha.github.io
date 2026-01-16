@@ -1,0 +1,23 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import AchievementsView from "../../views/Achievements";
+import { getSharedStaticPaths, getPageData } from "../../lib/astro";
+
+export const getStaticPaths = getSharedStaticPaths;
+
+const { lang } = Astro.params;
+const { langInfo } = Astro.props;
+const data = await getPageData(lang, langInfo);
+
+const title = `${import.meta.env.VITE_FULL_NAME} | ${data.translations?.navbar?.achievements}`;
+const description = `This is page for ${import.meta.env.VITE_FULL_NAME} (${import.meta.env.VITE_NICKNAME}) achievements`;
+---
+
+<MainLayout
+	initialData={data}
+	title={title}
+	image="/thumbnails/achievements.png"
+	description={description}
+>
+	<AchievementsView client:load data={data} />
+</MainLayout>

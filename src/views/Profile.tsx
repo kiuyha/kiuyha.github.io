@@ -12,20 +12,22 @@ import {
 	BrainCircuit,
 } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
-import { useData } from "../contexts/DataContext";
+import { DataProvider, useData, type Data } from "../contexts/DataContext";
 import ListCards from "../components/ListCards";
 import Button from "../components/Button";
 import ImagesSlider from "../components/ImagesSlider";
 import DetailsModal from "../components/DetailsModal";
 import { IframeMedia } from "../components/IframeMedia";
 
-export default function Profile() {
+export default function Profile({ data }: { data: Data }) {
 	return (
-		<div className="mt-auto grid grid-cols-4 gap-4">
-			<ProfileCard />
-			<DetailsCard />
-			<Projects />
-		</div>
+		<DataProvider initialData={data}>
+			<div className="mt-auto grid grid-cols-4 gap-4">
+				<ProfileCard />
+				<DetailsCard />
+				<Projects />
+			</div>
+		</DataProvider>
 	);
 }
 
@@ -114,7 +116,7 @@ function ProfileCard() {
 				<img
 					alt="Profile Banner"
 					className="h-36 w-full object-cover border-2"
-					src="/banner_profile.avif"
+					src="/banners/profile.avif"
 					loading="eager"
 					decoding="async"
 					fetchPriority="high"
@@ -439,7 +441,7 @@ function Projects() {
 			cardConfig={{
 				titleField: "name",
 				imageField: "thumbnail",
-				placeholderImage: "/placeholder_project.avif",
+				placeholderImage: "/placeholders/project.avif",
 				buttons: {
 					leftButton: (data) =>
 						(() => {
@@ -478,7 +480,7 @@ function Projects() {
 									ariaLabel={`Github link for project ${data.name}`}
 								>
 									<img
-										src="/github.svg"
+										src="/icons/github.svg"
 										alt="github"
 										width={15}
 										height={15}
@@ -513,7 +515,7 @@ function Projects() {
 						) : (
 							<ImagesSlider
 								images={[project.thumbnail, ...project.images]}
-								placeholderImage="/placeholder_project.avif"
+								placeholderImage="/placeholders/project.avif"
 							/>
 						)
 					}

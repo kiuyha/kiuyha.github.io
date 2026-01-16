@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useData } from "../contexts/DataContext";
+import { DataProvider, useData, type Data } from "../contexts/DataContext";
 import {
 	BarChart,
 	Book,
@@ -43,14 +43,16 @@ ChartJS.register(
 	BarElement,
 );
 
-export default function Contributions() {
+export default function Contributions({ data }: { data: Data }) {
 	return (
-		<div className="mt-auto grid grid-cols-6 gap-4">
-			<ProfileCard />
-			<TopLangsCard />
-			<StatsCard />
-			<Repositories />
-		</div>
+		<DataProvider initialData={data}>
+			<div className="mt-auto grid grid-cols-6 gap-4">
+				<ProfileCard />
+				<TopLangsCard />
+				<StatsCard />
+				<Repositories />
+			</div>
+		</DataProvider>
 	);
 }
 
@@ -102,7 +104,7 @@ function ProfileCard() {
 				<img
 					alt="Contributions Banner"
 					className="h-40 w-full object-cover"
-					src={"/banner_contributions.avif"}
+					src={"/banners/contributions.avif"}
 					loading="eager"
 					decoding="async"
 					fetchPriority="high"
@@ -201,12 +203,14 @@ function LanguagesDescription({
 		<div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
 			<AnimatePresence>
 				{languages.map((lang, index) => (
-					<motion.div 
-					initial={{ opacity: 0, y: -10 }}
-					animate={{ opacity: 1, y: 0 }}
-					exit={{ opacity: 0, y: -10 }}
-					transition={{ duration: 0.5, delay: index * 0.1 }}
-					key={lang.name} className="flex items-center gap-2">
+					<motion.div
+						initial={{ opacity: 0, y: -10 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -10 }}
+						transition={{ duration: 0.5, delay: index * 0.1 }}
+						key={lang.name}
+						className="flex items-center gap-2"
+					>
 						<span
 							className="h-3 w-3 flex-shrink-0 rounded-full"
 							style={{ backgroundColor: lang.color }}
@@ -292,7 +296,12 @@ function TopLangsCard() {
 			{/* Header and Toggle Button */}
 			<div className="p-4 flex items-center justify-between border-b-2 dark:border-zinc-600">
 				<div className="flex items-center gap-2">
-					<img src="/codeIcon.avifs" alt="code icon" width={25} height={25} />
+					<img
+						src="/animations/codeIcon.avifs"
+						alt="code icon"
+						width={25}
+						height={25}
+					/>
 					<span className="font-semibold text-xl capitalize">
 						{translations?.["top-langs-title"] ||
 							"Most used languages"}
@@ -532,75 +541,45 @@ function Repositories() {
 								},
 							},
 							{
-								label:
-									sorting?.["size-desc"] ||
-									"Largest size",
+								label: sorting?.["size-desc"] || "Largest size",
 								value: "size-desc",
 								sortingMethod: (a, b) => {
-									return (
-										b.sizeInKB -
-										a.sizeInKB
-									);
+									return b.sizeInKB - a.sizeInKB;
 								},
 							},
 							{
-								label:
-									sorting?.["size-asc"] ||
-									"Smallest size",
+								label: sorting?.["size-asc"] || "Smallest size",
 								value: "size-asc",
 								sortingMethod: (a, b) => {
-									return (
-										a.sizeInKB -
-										b.sizeInKB
-									);
+									return a.sizeInKB - b.sizeInKB;
 								},
 							},
 							{
-								label:
-									sorting?.["stars-desc"] ||
-									"Most stars",
+								label: sorting?.["stars-desc"] || "Most stars",
 								value: "stars-desc",
 								sortingMethod: (a, b) => {
-									return (
-										b.stars -
-										a.stars
-									);
+									return b.stars - a.stars;
 								},
 							},
 							{
-								label:
-									sorting?.["stars-asc"] ||
-									"Least stars",
+								label: sorting?.["stars-asc"] || "Least stars",
 								value: "stars-asc",
 								sortingMethod: (a, b) => {
-									return (
-										a.stars -
-										b.stars
-									);
+									return a.stars - b.stars;
 								},
 							},
 							{
-								label:
-									sorting?.["forks-desc"] ||
-									"Most forks",
+								label: sorting?.["forks-desc"] || "Most forks",
 								value: "forks-desc",
 								sortingMethod: (a, b) => {
-									return (
-										b.forks -
-										a.forks
-									);
+									return b.forks - a.forks;
 								},
 							},
 							{
-								label:
-									sorting?.["forks-asc"] ||
-									"Least forks",
+								label: sorting?.["forks-asc"] || "Least forks",
 								value: "forks-asc",
 								sortingMethod: (a, b) => {
-									return (
-										a.forks -
-										b.forks
-									);
+									return a.forks - b.forks;
 								},
 							},
 							{
@@ -812,13 +791,19 @@ function RepoCard<T extends Contributions["repositories"][number]>({
 				<div className="flex items-center gap-2">
 					<Calendar size={20} />
 					<span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
-						{new Date(data.createdAt).toLocaleString()}
+						{new Date(data.createdAt).toLocaleString("en-US", {
+							dateStyle: "medium",
+							timeStyle: "short",
+						})}
 					</span>
 				</div>
 				<div className="flex items-center gap-2">
 					<Calendar size={20} />
 					<span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
-						{new Date(data.updatedAt).toLocaleString()}
+						{new Date(data.updatedAt).toLocaleString("en-US", {
+							dateStyle: "medium",
+							timeStyle: "short",
+						})}
 					</span>
 				</div>
 			</div>

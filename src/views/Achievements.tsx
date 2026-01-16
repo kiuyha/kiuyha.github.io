@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import ListCards from "../components/ListCards";
-import { useData } from "../contexts/DataContext";
+import { type Data } from "../contexts/DataContext";
 import Button from "../components/Button";
 import {
 	Building2,
@@ -15,11 +15,11 @@ import {
 import DetailsModal from "../components/DetailsModal";
 import ImagesSlider from "../components/ImagesSlider";
 
-export default function Achievements() {
+export default function Achievements({ data }: { data: Data }) {
 	const {
 		translations: { achievements: translations, sorting },
 		achievements,
-	} = useData();
+	} = data;
 	const [type, setType] = useState("");
 	const [category, setCategory] = useState("");
 	const [scope, setScope] = useState("");
@@ -140,7 +140,7 @@ export default function Achievements() {
 			cardConfig={{
 				titleField: "name",
 				imageField: "thumbnail",
-				placeholderImage: "/placeholder_achievement.avif",
+				placeholderImage: "/placeholders/achievement.avif",
 				buttons: {
 					leftButton: (data) =>
 						(() => {
@@ -218,7 +218,7 @@ export default function Achievements() {
 								achievement.thumbnail,
 								...achievement.images,
 							]}
-							placeholderImage="/placeholder_achievement.avif"
+							placeholderImage="/placeholders/achievement.avif"
 						/>
 					}
 				/>

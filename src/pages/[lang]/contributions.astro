@@ -1,0 +1,23 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import ContributionsView from "../../views/Contributions";
+import { getSharedStaticPaths, getPageData } from "../../lib/astro";
+
+export const getStaticPaths = getSharedStaticPaths;
+
+const { lang } = Astro.params;
+const { langInfo } = Astro.props;
+const data = await getPageData(lang, langInfo);
+
+const title = `${import.meta.env.VITE_FULL_NAME} | ${data.translations?.navbar?.contributions}`;
+const description = `This is page for ${import.meta.env.VITE_FULL_NAME} (${import.meta.env.VITE_NICKNAME}) github contributions`;
+---
+
+<MainLayout
+	initialData={data}
+	title={title}
+	image="/thumbnails/contributions.png"
+	description={description}
+>
+	<ContributionsView client:load data={data} />
+</MainLayout>

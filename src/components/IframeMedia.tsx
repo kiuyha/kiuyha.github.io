@@ -14,7 +14,6 @@ export function IframeMedia({ link }: { link: string }) {
 	useEffect(() => {
 		// adjust according to screen size since mobile screen is smaller, so the limit will be smaller
 		const handleResize = () => {
-			console.log(window.innerWidth);
 			setLimitScale({
 				min: window.innerWidth >= 768 ? 0.5 : 0.2,
 				max: window.innerWidth >= 768 ? 1.5 : 0.8,
