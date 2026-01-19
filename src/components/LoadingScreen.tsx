@@ -25,7 +25,7 @@ export default function LoadingScreen() {
 	return (
 		<div
 			ref={loadingRef}
-			className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-zinc-900"
+			className="inset-0 fixed z-999 flex items-center justify-center min-h-screen bg-gray-100 dark:bg-zinc-900"
 		>
 			<div className="flex flex-col items-center text-black dark:text-white">
 				{imgError ? (
