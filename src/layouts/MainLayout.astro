@@ -1,5 +1,6 @@
 ---
 import Footer from "../components/Footer";
+import LoadingScreen from "../components/LoadingScreen";
 import "../index.css";
 import Shell from "./Shell";
 import { ClientRouter } from 'astro:transitions';
@@ -44,6 +45,8 @@ const githubApi = import.meta.env.VITE_GITHUB_API_LINK;
 		<ClientRouter />
 	</head>
 	<body class="bg-primary text-black dark:text-white relative min-h-screen">
+		<LoadingScreen client:load />
+		
 		{
 			initialData ? (
 				<>
