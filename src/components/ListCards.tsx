@@ -123,12 +123,12 @@ export default function ListCards<TData extends Record<string, unknown>>({
 				(Array.isArray(searchConfig?.fieldSearch)
 					? searchConfig.fieldSearch.some((field) =>
 							(data[field] as string)
-								.toLowerCase()
-								.includes(search.toLowerCase()),
+								?.toLowerCase()
+								?.includes(search.toLowerCase()),
 						)
 					: (data[searchConfig?.fieldSearch || "name"] as string)
-							.toLowerCase()
-							.includes(search.toLowerCase()));
+							?.toLowerCase()
+							?.includes(search.toLowerCase()));
 
 			return inFilter && inSearch;
 		});

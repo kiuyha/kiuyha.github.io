@@ -14,7 +14,6 @@ export default function LoadingScreen() {
 		};
 
 		if (document.readyState === "complete") {
-			console.log("okay")
 			removeLoading();
 		} else {
 			window.addEventListener("load", removeLoading);

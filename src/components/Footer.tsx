@@ -6,7 +6,6 @@ import emailjs from "@emailjs/browser";
 
 export default function Footer() {
 	const [showEmailModal, setShowEmailModal] = useState(false);
-
 	return (
 		<footer className="flex flex-col gap-6 items-center justify-center py-10 border-t-2 border-zinc-900 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-xl pb-25 md:pb-40">
 			<div className="flex items-center gap-2">
@@ -176,7 +175,7 @@ function EmailModal({ close }: { close: () => void }) {
 						onClick={() => setIsAnonymous(!isAnonymous)}
 						className={`
                             cursor-pointer flex items-center gap-3 p-3 border-2 border-zinc-900 dark:border-zinc-600 
-                            transition-all duration-200 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none
+                            transition-all duration-200 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none
                             ${isAnonymous ? "bg-zinc-900 text-white dark:bg-white dark:text-black" : "bg-white dark:bg-zinc-800"}
                         `}
 					>
@@ -302,7 +301,7 @@ function EmailModal({ close }: { close: () => void }) {
                             bg-zinc-900 text-white dark:bg-white dark:text-black 
                             font-black text-lg border-2 border-zinc-900 dark:border-zinc-600
                             shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
-                            hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none
+                            hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none
                             disabled:opacity-50 disabled:cursor-not-allowed
                             transition-all
                         "

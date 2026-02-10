@@ -144,7 +144,7 @@ function MediumCard<T extends Articles["items"][number]>({
 		>
 			<div className="pb-4 border-b-2 dark:border-zinc-600 flex flex-col gap-4">
 				<div className="flex items-center gap-4">
-					<Newspaper size={25} className="flex-shrink-0" />
+					<Newspaper size={25} className="shrink-0" />
 					<a
 						href={data.link}
 						target="_blank"
@@ -161,7 +161,7 @@ function MediumCard<T extends Articles["items"][number]>({
 					href={data.link}
 					target="_blank"
 					rel="noopener noreferrer"
-					className="cursor-pointer relative flex-1 max-h-[250px] border-2 dark:border-zinc-600"
+					className="cursor-pointer relative flex-1 max-h-62.5 border-2 dark:border-zinc-600"
 				>
 					{/* skeleton image */}
 					{imageLoading && (

@@ -54,7 +54,7 @@ const githubApi = import.meta.env.VITE_GITHUB_API_LINK;
 					<main class="pt-25 pb-8 px-3 md:px-8">
 						<slot />
 					</main>
-					<Footer />
+					<Footer client:visible />
 				</>
 			) : (
 				<slot/>

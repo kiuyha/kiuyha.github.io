@@ -47,7 +47,7 @@ export function IframeMedia({ link }: { link: string }) {
 
 	return (
 		<>
-			<div className="h-[600px] relative">
+			<div className="h-150 relative">
 				{errorIframe ? (
 					<div className="flex items-center justify-center w-full h-full">
 						<h2 className="text-2xl font-bold">

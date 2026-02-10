@@ -212,7 +212,7 @@ function LanguagesDescription({
 						className="flex items-center gap-2"
 					>
 						<span
-							className="h-3 w-3 flex-shrink-0 rounded-full"
+							className="h-3 w-3 shrink-0 rounded-full"
 							style={{ backgroundColor: lang.color }}
 						/>
 						<div className="flex min-w-0 flex-1 items-center justify-between gap-2">
@@ -223,7 +223,7 @@ function LanguagesDescription({
 								{lang.name}
 							</span>
 
-							<span className="flex-shrink-0 text-zinc-500 dark:text-zinc-400">
+							<span className="shrink-0 text-zinc-500 dark:text-zinc-400">
 								{lang.percentage.toFixed(2)}%
 							</span>
 						</div>
@@ -717,7 +717,7 @@ function RepoCard<T extends Contributions["repositories"][number]>({
 			<div className="pb-4 border-b-2 dark:border-zinc-600 flex flex-col gap-4">
 				<div className="flex items-center justify-between gap-4">
 					<div className="flex items-center gap-4">
-						<Book size={25} className="flex-shrink-0" />
+						<Book size={25} className="shrink-0" />
 						{data.isPrivate ? (
 							<span className="font-semibold uppercase">
 								<Highlight text={data.name} />
@@ -737,7 +737,7 @@ function RepoCard<T extends Contributions["repositories"][number]>({
 					</div>
 
 					<div
-						className="flex-shrink-0"
+						className="shrink-0"
 						title={data.isPrivate ? "Private" : "Public"}
 					>
 						{data.isPrivate ? (
