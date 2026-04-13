@@ -3,49 +3,61 @@ import { fetchSupportedLangs } from "../lib/sheets";
 
 const supportedLangs = await fetchSupportedLangs();
 const siteUrl = import.meta.env.VITE_WEBSITE_LINK || "https://kiuyha.my.id";
-const title = `${import.meta.env.VITE_FULL_NAME} (${import.meta.env.VITE_NICKNAME}) | ${import.meta.env.VITE_TITLE}`,
-const description = `This is a web for ${import.meta.env.VITE_FULL_NAME} (${import.meta.env.VITE_NICKNAME}) portfolio`,
+const title = `${import.meta.env.VITE_FULL_NAME} (${import.meta.env.VITE_NICKNAME}) | ${import.meta.env.VITE_TITLE}`;
+const description = `This is a web for ${import.meta.env.VITE_FULL_NAME} (${import.meta.env.VITE_NICKNAME}) portfolio`;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{title}</title>
-	<meta name="description" content={description}>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-	<link rel="sitemap" href="/sitemap-index.xml" />
-    
-    {supportedLangs.map((lang) => (
-        <link rel="alternate" hreflang={lang.code} href={`${siteUrl}/${lang.code}`} />
-    ))}
-    <link rel="alternate" hreflang="x-default" href={`${siteUrl}/en`} />
-    <link rel="canonical" href={`${siteUrl}`} />
+	<head>
+		<meta charset="UTF-8" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<link rel="sitemap" href="/sitemap-index.xml" />
 
-    <meta http-equiv="refresh" content="0;url=/en" />
-</head>
-<body>
-    <script is:inline define:vars={{ supportedLangs }}>
-        const userLang = navigator.language.split("-")[0];
-        const defaultCode = supportedLangs[0]?.code || "en";
-        const langToRedirect = supportedLangs.find((l) => l.code === userLang)
-            ? userLang
-            : defaultCode;
+		{
+			supportedLangs.map((lang) => (
+				<link
+					rel="alternate"
+					hreflang={lang.code}
+					href={`${siteUrl}/${lang.code}`}
+				/>
+			))
+		}
+		<link rel="alternate" hreflang="x-default" href={`${siteUrl}/en`} />
+		<link rel="canonical" href={`${siteUrl}`} />
 
-        window.location.replace(`/${langToRedirect}`);
-    </script>
+		<meta http-equiv="refresh" content="0;url=/en" />
+	</head>
+	<body>
+		<script is:inline define:vars={{ supportedLangs }}>
+			const userLang = navigator.language.split("-")[0];
+			const defaultCode = supportedLangs[0]?.code || "en";
+			const langToRedirect = supportedLangs.find(
+				(l) => l.code === userLang,
+			)
+				? userLang
+				: defaultCode;
 
-    <noscript>
-        <div style="padding: 2rem; font-family: sans-serif;">
-            <h1>Please select your language:</h1>
-            <ul>
-                {supportedLangs.map((lang) => (
-                    <li><a href={`/${lang.code}`}>{lang.name}</a></li>
-                ))}
-            </ul>
-        </div>
-    </noscript>
-</body>
+			window.location.replace(`/${langToRedirect}`);
+		</script>
+
+		<noscript>
+			<div style="padding: 2rem; font-family: sans-serif;">
+				<h1>Please select your language:</h1>
+				<ul>
+					{
+						supportedLangs.map((lang) => (
+							<li>
+								<a href={`/${lang.code}`}>{lang.name}</a>
+							</li>
+						))
+					}
+				</ul>
+			</div>
+		</noscript>
+	</body>
 </html>
