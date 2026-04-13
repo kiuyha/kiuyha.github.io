@@ -57,9 +57,9 @@ export default function DetailsModal<TData extends Record<string, unknown>>({
 			>
 				{/* Header */}
 				<div className="p-4 flex items-center justify-between bg-white dark:bg-zinc-900 border-b-4 dark:border-zinc-600">
-					<h1 className="font-bold text-lg uppercase">
+					<span className="font-bold text-lg uppercase">
 						{data?.[titleField] as string}
-					</h1>
+					</span>
 					<button
 						type="button"
 						aria-label="Close details"

@@ -398,9 +398,9 @@ function Card<T extends Record<string, unknown>>({
 					<>
 						<div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity duration-300" />
 						<div className="absolute inset-0 flex items-center justify-center text-white text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer">
-							<h1 className="font-bold text-xl text-center uppercase">
+							<span className="font-bold text-xl text-center uppercase">
 								{data?.[titleCardKey] as string}
-							</h1>
+							</span>
 						</div>
 					</>
 				)}
@@ -408,9 +408,9 @@ function Card<T extends Record<string, unknown>>({
 
 			{titleCardKey && (data?.[titleCardKey] as string) && (
 				<div className="px-4 py-3 border-t-4 border-zinc-900 dark:border-zinc-600">
-					<h1 className="font-bold text-xl text-center uppercase">
+					<span className="font-bold text-xl text-center uppercase">
 						<Highlight text={data?.[titleCardKey] as string} />
-					</h1>
+					</span>
 				</div>
 			)}
 

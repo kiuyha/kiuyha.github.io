@@ -150,10 +150,10 @@ function EmailModal({ close }: { close: () => void }) {
 			>
 				{/* Header */}
 				<div className="p-4 flex items-center justify-between bg-white dark:bg-zinc-900 border-b-4 border-zinc-900 dark:border-zinc-600">
-					<h1 className="font-bold text-lg uppercase flex items-center gap-2">
+					<span className="font-bold text-lg uppercase flex items-center gap-2">
 						<Mail className="stroke-[3px]" size={20} />
 						Drop a Message
-					</h1>
+					</span>
 					<button
 						type="button"
 						aria-label="Close modal"

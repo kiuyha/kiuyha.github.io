@@ -15,7 +15,7 @@ export default function ErrorPage({
 				<Background />
 				<div className="flex flex-col relative w-full h-screen text-black dark:text-white">
 					<div className="flex flex-col justify-center items-center flex-grow text-center p-8">
-						<h1 className="text-6xl font-bold">Oops!</h1>
+						<span className="text-6xl font-bold">Oops!</span>
 						<p className="text-lg mt-4">{error.message}</p>
 						{errorCode && (
 							<div className="mt-2 flex items-center gap-2">
