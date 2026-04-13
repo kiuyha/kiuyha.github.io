@@ -7,9 +7,9 @@ import { useData } from "../contexts/DataContext";
 export default function Header() {
 	return (
 		<header className="w-full fixed z-100 bg-white dark:bg-zinc-800 shadow-2xl flex items-center px-8 py-4 justify-between border-b-2 border-zinc-900 dark:border-zinc-600">
-			<h1 className="font-bold text-2xl">
+			<span className="font-bold text-2xl">
 				{import.meta.env.VITE_NICKNAME || "Kiuyha"}
-			</h1>
+			</span>
 			<div className="flex items-center gap-4">
 				<LanguageSwitcher />
 				<ThemeSwitcher />

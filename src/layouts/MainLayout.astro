@@ -22,7 +22,7 @@ const {
 
 const siteUrl = import.meta.env.VITE_WEBSITE_LINK || "https://kiuyha.my.id";
 const githubApi = import.meta.env.VITE_GITHUB_API_LINK;
-const canonicalPath = Astro.url.pathname.replace(/\/$/, "");
+const canonicalPath = Astro.url.pathname.replace(/\/$/, "").replace(/\.html$/, "");
 const canonicalUrl = new URL(
 	canonicalPath === "" ? "/" : canonicalPath,
 	siteUrl,
