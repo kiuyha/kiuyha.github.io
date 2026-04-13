@@ -2,8 +2,16 @@
 import Footer from "../components/Footer";
 import LoadingScreen from "../components/LoadingScreen";
 import "../index.css";
+import { getPageData } from "../lib/astro";
 import Shell from "./Shell";
-import { ClientRouter } from 'astro:transitions';
+import { ClientRouter } from "astro:transitions";
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: string;
+	initialData?: Awaited<ReturnType<typeof getPageData>>;
+}
 
 const {
 	title = `${import.meta.env.VITE_FULL_NAME} (${import.meta.env.VITE_NICKNAME}) | ${import.meta.env.VITE_TITLE}`,
@@ -12,18 +20,56 @@ const {
 	initialData,
 } = Astro.props;
 
-const siteUrl = import.meta.env.VITE_WEBSITE_LINK;
+const siteUrl = import.meta.env.VITE_WEBSITE_LINK || "https://kiuyha.my.id";
 const githubApi = import.meta.env.VITE_GITHUB_API_LINK;
+const canonicalPath = Astro.url.pathname.replace(/\/$/, "");
+const canonicalUrl = new URL(
+	canonicalPath === "" ? "/" : canonicalPath,
+	siteUrl,
+).href;
+
+let alternateLinks: Array<{ lang: string; href: string }> = [];
+if (initialData?.supportedLangs && initialData?.currentLang) {
+	// Remove the current language code from the path (e.g., "/en/articles" becomes "/articles")
+	const basePath = Astro.url.pathname.replace(
+		new RegExp(`^/${initialData.currentLang}`),
+		"",
+	);
+	alternateLinks = initialData.supportedLangs.map((lang) => {
+		const altPath = `/${lang.code}${basePath}`.replace(/\/$/, "");
+		return {
+			lang: lang.code,
+			href: new URL(altPath === "" ? "/" : altPath, siteUrl).href,
+		};
+	});
+
+	// Add the required x-default fallback (Using English as the default)
+	const defaultLang =
+		initialData.supportedLangs.find((l) => l.code === "en") ||
+		initialData.supportedLangs[0];
+	const defaultPath = `/${defaultLang.code}${basePath}`.replace(/\/$/, "");
+	alternateLinks.push({
+		lang: "x-default",
+		href: new URL(defaultPath === "" ? "/" : defaultPath, siteUrl).href,
+	});
+}
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={initialData?.currentLang || "en"}>
 	<head>
 		<meta charset="UTF-8" />
 		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
 		<link rel="sitemap" href="/sitemap-index.xml" />
+
+		<link rel="canonical" href={canonicalUrl} />
+		{
+			alternateLinks.map((link) => (
+				<link rel="alternate" hreflang={link.lang} href={link.href} />
+			))
+		}
 
 		<title>{title}</title>
 
@@ -46,18 +92,22 @@ const githubApi = import.meta.env.VITE_GITHUB_API_LINK;
 	</head>
 	<body class="bg-primary text-black dark:text-white relative min-h-screen">
 		<LoadingScreen client:load />
-		
+
 		{
 			initialData ? (
 				<>
-					<Shell client:load initialData={initialData} transition:persist/>
+					<Shell
+						client:load
+						initialData={initialData}
+						transition:persist
+					/>
 					<main class="pt-25 pb-8 px-3 md:px-8">
 						<slot />
 					</main>
 					<Footer client:visible />
 				</>
 			) : (
-				<slot/>
+				<slot />
 			)
 		}
 	</body>
