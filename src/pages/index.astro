@@ -29,10 +29,20 @@ const description = `This is a web for ${import.meta.env.VITE_FULL_NAME} (${impo
 		}
 		<link rel="alternate" hreflang="x-default" href={`${siteUrl}/en`} />
 		<link rel="canonical" href={`${siteUrl}`} />
-
-		<meta http-equiv="refresh" content="0;url=/en" />
 	</head>
 	<body>
+		<div style="padding: 2rem; font-family: sans-serif;">
+			<h1>Please select your language:</h1>
+			<ul>
+				{
+					supportedLangs.map((lang) => (
+						<li>
+							<a href={`/${lang.code}`}>{lang.name}</a>
+						</li>
+					))
+				}
+			</ul>
+		</div>
 		<script is:inline define:vars={{ supportedLangs }}>
 			const userLang = navigator.language.split("-")[0];
 			const defaultCode = supportedLangs[0]?.code || "en";
@@ -44,20 +54,5 @@ const description = `This is a web for ${import.meta.env.VITE_FULL_NAME} (${impo
 
 			window.location.replace(`/${langToRedirect}`);
 		</script>
-
-		<noscript>
-			<div style="padding: 2rem; font-family: sans-serif;">
-				<h1>Please select your language:</h1>
-				<ul>
-					{
-						supportedLangs.map((lang) => (
-							<li>
-								<a href={`/${lang.code}`}>{lang.name}</a>
-							</li>
-						))
-					}
-				</ul>
-			</div>
-		</noscript>
 	</body>
 </html>

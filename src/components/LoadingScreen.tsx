@@ -31,6 +31,7 @@ export default function LoadingScreen() {
 					<LoaderCircle size={100} className="animate-spin mb-4" />
 				) : (
 					<img
+						alt="Loading animation"
 						width={200}
 						height={200}
 						src="/animations/loading.avifs"
