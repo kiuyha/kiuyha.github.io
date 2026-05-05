@@ -407,11 +407,9 @@ function Card<T extends Record<string, unknown>>({
 			</div>
 
 			{titleCardKey && (data?.[titleCardKey] as string) && (
-				<div className="px-4 py-3 border-t-4 border-zinc-900 dark:border-zinc-600">
-					<span className="font-bold text-xl text-center uppercase">
-						<Highlight text={data?.[titleCardKey] as string} />
-					</span>
-				</div>
+				<span className="px-4 py-3 border-t-4 border-zinc-900 dark:border-zinc-600 font-bold text-xl text-center uppercase">
+					<Highlight text={data?.[titleCardKey] as string} />
+				</span>
 			)}
 
 			{(cardConfig.buttons.leftButton ||
