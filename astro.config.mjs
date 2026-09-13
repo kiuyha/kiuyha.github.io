@@ -12,7 +12,7 @@ export default defineConfig({
 	site: import.meta.env.VITE_WEBSITE_LINK || "https://kiuyha.my.id",
 	build: {
 		assets: "assets",
-		format: "file",
+		format: "directory",
 	},
 	vite: {
 		build: {
