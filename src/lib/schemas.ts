@@ -117,6 +117,7 @@ export const ArticlesSchema = z.object({
 			pubDate: z.string(),
 			link: z.string(),
 			description: z.string(),
+			content: z.string().optional().default(""),
 			image: z.optional(z.string()),
 		})
 	),
@@ -125,6 +126,7 @@ export const ArticlesSchema = z.object({
 		...data,
 		items: data.items.map((item) => ({
 			...item,
+			content: item.content || item.description,
 			description: item.description
 				.replace(/<[^>]+>/g, "")
 				.replace(/&amp;/g, "&")
@@ -136,7 +138,7 @@ export const ArticlesSchema = z.object({
 				.replace(/&copy;/g, "(c)")
 				.replace(/&reg;/g, "(r)")
 				.substring(0, 300) + "...",
-			image: getFirstImage(item.description),
+			image: getFirstImage(item.description || item.content || ""),
 		})),
 	};
 })

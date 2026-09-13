@@ -6,14 +6,14 @@ import {
 } from "./schemas";
 
 async function fetchGithubContributions(): Promise<unknown> {
-	const username = import.meta.env.VITE_GITHUB_LINK.split("/")?.[3] || "kiuyha";
-	const baseHost = import.meta.env.VITE_GITHUB_API_LINK || "https://github-stats.kiuyha.dev";
+	const username = import.meta.env.PUBLIC_GITHUB_LINK.split("/")?.[3] || "kiuyha";
+	const baseHost = import.meta.env.PUBLIC_GITHUB_API_LINK || "https://github-stats.kiuyha.dev";
 	const basePath = `/api/portfolio-data`;
 	const queryParams = new URLSearchParams({
 		username: username,
-		langs_count: import.meta.env.VITE_CONTRIBUTIONS_LANGS_COUNT || "10",
+		langs_count: import.meta.env.PUBLIC_CONTRIBUTIONS_LANGS_COUNT || "10",
 		include_all_commits:
-			import.meta.env.VITE_CONTRIBUTIONS_INCLUDE_ALL_COMMITS || "false",
+			import.meta.env.PUBLIC_CONTRIBUTIONS_INCLUDE_ALL_COMMITS || "false",
 	});
 
 	const response = await fetch(`${baseHost}${basePath}?${queryParams.toString()}`);

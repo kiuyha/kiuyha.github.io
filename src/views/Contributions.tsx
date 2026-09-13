@@ -450,7 +450,7 @@ function StatsCard() {
 						).replace(
 							":year",
 							import.meta.env
-								.VITE_CONTRIBUTIONS_INCLUDE_ALL_COMMITS ===
+								.PUBLIC_CONTRIBUTIONS_INCLUDE_ALL_COMMITS ===
 								"true"
 								? ""
 								: `(${new Date().getFullYear()})`,

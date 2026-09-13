@@ -3,7 +3,7 @@ import { ArticlesSchema, defaultArticles, type Articles } from "./schemas";
 
 async function fetchMediumArticles(): Promise<unknown> {
 	const username =
-		import.meta.env.VITE_GITHUB_LINK.split("@")?.[1] || "kiuyha";
+		import.meta.env.PUBLIC_GITHUB_LINK.split("@")?.[1] || "kiuyha";
 	const response = await fetch(
 		`https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@${username}`,
 	);
@@ -28,7 +28,7 @@ export async function fetchArticles(): Promise<Articles> {
 		...validResult.data,
 		items: validResult.data.items.map((item) => ({
 			...item,
-			
+
 		})),
 	};
 }

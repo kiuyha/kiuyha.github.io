@@ -9,8 +9,8 @@ const { lang } = Astro.params;
 const { langInfo } = Astro.props;
 const data = await getPageData(lang, langInfo);
 
-const title = `${import.meta.env.VITE_FULL_NAME} | ${data.translations?.navbar?.achievements}`;
-const description = `This is page for ${import.meta.env.VITE_FULL_NAME} (${import.meta.env.VITE_NICKNAME}) achievements`;
+const title = `${import.meta.env.PUBLIC_FULL_NAME} | ${data.translations?.navbar?.achievements}`;
+const description = `This is page for ${import.meta.env.PUBLIC_FULL_NAME} (${import.meta.env.PUBLIC_NICKNAME}) achievements`;
 ---
 
 <MainLayout

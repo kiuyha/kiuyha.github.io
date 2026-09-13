@@ -9,7 +9,7 @@ export default defineConfig({
 		react(),
 		sitemap(),
 	],
-	site: import.meta.env.VITE_WEBSITE_LINK || "https://kiuyha.dev",
+	site: import.meta.env.PUBLIC_WEBSITE_LINK || "https://kiuyha.dev",
 	build: {
 		assets: "assets",
 		format: "directory",
@@ -20,9 +20,9 @@ export default defineConfig({
 		},
 		plugins: [tailwindcss()],
 	},
-    prefetch: {
-        defaultStrategy: 'viewport',
-        prefetchAll: true
-    },
+	prefetch: {
+		defaultStrategy: 'viewport',
+		prefetchAll: true
+	},
 	trailingSlash: "never"
 });

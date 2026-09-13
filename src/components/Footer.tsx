@@ -11,7 +11,7 @@ export default function Footer() {
 			<div className="flex items-center gap-2">
 				<Button
 					href={
-						import.meta.env.VITE_GITHUB_LINK ||
+						import.meta.env.PUBLIC_GITHUB_LINK ||
 						"https://github.com/kiuyha"
 					}
 					aria-label="see my github profile"
@@ -27,7 +27,7 @@ export default function Footer() {
 
 				<Button
 					href={
-						import.meta.env.VITE_LINKEDIN_LINK ||
+						import.meta.env.PUBLIC_LINKEDIN_LINK ||
 						"https://www.linkedin.com/in/ketut-shridhara-46bb792a5"
 					}
 					aria-label="see my linkedin profile"
@@ -43,7 +43,7 @@ export default function Footer() {
 
 				<Button
 					href={
-						import.meta.env.VITE_MEDIUM_LINK ||
+						import.meta.env.PUBLIC_MEDIUM_LINK ||
 						"https://medium.com/@kiuyha"
 					}
 					aria-label="see my medium articles"
@@ -74,7 +74,7 @@ export default function Footer() {
 			<div className="flex flex-col items-center">
 				<span className="font-semibold">
 					&copy; {new Date().getFullYear()}{" "}
-					{import.meta.env.VITE_FULL_NAME || "Ketut Shridhara"}
+					{import.meta.env.PUBLIC_FULL_NAME || "Ketut Shridhara"}
 				</span>
 				<span className="text-sm">All rights reserved</span>
 			</div>
@@ -94,7 +94,7 @@ function EmailModal({ close }: { close: () => void }) {
 		setLoading(true);
 
 		emailjs.init({
-			publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+			publicKey: import.meta.env.PUBLIC_EMAILJS_PUBLIC_KEY,
 			blockHeadless: true,
 			limitRate: {
 				throttle: 1000,
@@ -103,8 +103,8 @@ function EmailModal({ close }: { close: () => void }) {
 
 		try {
 			await emailjs.sendForm(
-				import.meta.env.VITE_EMAILJS_SERVICE_ID,
-				import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+				import.meta.env.PUBLIC_EMAILJS_SERVICE_ID,
+				import.meta.env.PUBLIC_EMAILJS_TEMPLATE_ID,
 				formRef.current,
 			);
 			alert("Message sent successfully!");

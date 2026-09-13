@@ -12,7 +12,7 @@ import {
 	type Translations,
 } from "./schemas";
 
-const SPREADSHEET_ID = import.meta.env.VITE_SPREADSHEET_ID;
+const SPREADSHEET_ID = import.meta.env.PUBLIC_SPREADSHEET_ID;
 async function fetchData(sheetName: string): Promise<Record<string, unknown>[]> {
 	const sheetUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${sheetName}`;
 	const response = await fetch(sheetUrl);
@@ -98,7 +98,7 @@ const ParseProjectSchema = z.array(
 				images: item.images
 					? item.images.split(",").map((url) => url.trim())
 					: [],
-					tech_stack: item.tech_stack
+				tech_stack: item.tech_stack
 					? item.tech_stack.split(",").map((tech) => tech.trim())
 					: [],
 			};
@@ -116,7 +116,7 @@ export async function fetchProject(): Promise<Project[]> {
 		);
 		return [];
 	}
-	
+
 	return validResult.data;
 }
 

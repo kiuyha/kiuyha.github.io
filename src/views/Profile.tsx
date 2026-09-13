@@ -138,14 +138,14 @@ function ProfileCard() {
 
 			<div className="p-4 pt-18 flex flex-col items-center justify-center">
 				<h2 className="text-xl font-bold ">
-					{import.meta.env.VITE_FULL_NAME || "Ketut Shridhara"}
+					{import.meta.env.PUBLIC_FULL_NAME || "Ketut Shridhara"}
 				</h2>
 				<h3 className="text-md font-semibold mb-2">
-					({import.meta.env.VITE_NICKNAME || "Kiuyha"})
+					({import.meta.env.PUBLIC_NICKNAME || "Kiuyha"})
 				</h3>
 				<TypingAnimation
 					sentence={
-						import.meta.env.VITE_TITLE ||
+						import.meta.env.PUBLIC_TITLE ||
 						"Developer | Data Scientist"
 					}
 				/>
@@ -180,9 +180,8 @@ function CollapsedContent({
 				</div>
 				<ChevronDown
 					size={20}
-					className={`${
-						isOpen ? "rotate-180" : ""
-					} transition-transform duration-300 ease-in-out`}
+					className={`${isOpen ? "rotate-180" : ""
+						} transition-transform duration-300 ease-in-out`}
 				/>
 			</button>
 			<AnimatePresence>
@@ -208,7 +207,7 @@ function DetailsCard() {
 	} = useData();
 	const educationLength =
 		translations?.["education-length"] &&
-		!isNaN(Number(translations["education-length"]))
+			!isNaN(Number(translations["education-length"]))
 			? Number(translations["education-length"])
 			: null;
 

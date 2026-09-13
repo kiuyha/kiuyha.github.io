@@ -1,9 +1,18 @@
 import { useMemo, useState } from "react";
 import ListCards from "../components/ListCards";
 import { type Data } from "../contexts/DataContext";
-import { Newspaper, Calendar, User, Tag } from "lucide-react";
-import { motion } from "framer-motion";
+import {
+	Newspaper,
+	Calendar,
+	User,
+	Tag,
+	BookOpen,
+	ExternalLink,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import type { Articles } from "../lib/schemas";
+import ArticleReaderModal from "../components/ArticleReaderModal";
+import Button from "../components/Button";
 
 export default function Articles({ data }: { data: Data }) {
 	const {
@@ -12,6 +21,10 @@ export default function Articles({ data }: { data: Data }) {
 	} = data;
 	const [category, setCategory] = useState("");
 	const [sort, setSort] = useState("createdAt-desc");
+	const [selectedArticle, setSelectedArticle] = useState<
+		Articles["items"][number] | null
+	>(null);
+
 	const categories = useMemo(() => {
 		return [
 			...new Set(articles.items.flatMap((article) => article.categories)),
@@ -19,81 +32,99 @@ export default function Articles({ data }: { data: Data }) {
 	}, [articles]);
 
 	return (
-		<ListCards
-			title={translations?.["articles-list"] || "Articles List"}
-			dataSet={articles.items}
-			searchConfig={{
-				placeholder:
-					translations?.["search-placeholder"] || "Search by Name",
-				fieldSearch: ["title", "description"],
-			}}
-			filterConfig={{
-				canReset: true,
-				selectField: [
-					{
-						name: "categories.*",
-						label: translations?.["category"] || "category",
-						ariaLabel: "choose category of article",
-						options: categories.map((category) => ({
-							label: category,
+		<>
+			<ListCards
+				title={translations?.["articles-list"] || "Articles List"}
+				dataSet={articles.items}
+				searchConfig={{
+					placeholder:
+						translations?.["search-placeholder"] || "Search by Name",
+					fieldSearch: ["title", "description"],
+				}}
+				filterConfig={{
+					canReset: true,
+					selectField: [
+						{
+							name: "categories.*",
+							label: translations?.["category"] || "category",
+							ariaLabel: "choose category of article",
+							options: categories.map((category) => ({
+								label: category,
+								value: category,
+							})),
+							setValue: setCategory,
 							value: category,
-						})),
-						setValue: setCategory,
-						value: category,
-					},
-					{
-						name: "sort",
-						label: sorting?.["sort-by"] || "Sort By",
-						ariaLabel: "sort articles by",
-						options: [
-							{
-								label:
-									sorting?.["createdAt-desc"] ||
-									"Newest (Created)",
-								value: "createdAt-desc",
-								sortingMethod: (a, b) => {
-									return (
-										new Date(b.pubDate).getTime() -
-										new Date(a.pubDate).getTime()
-									);
+						},
+						{
+							name: "sort",
+							label: sorting?.["sort-by"] || "Sort By",
+							ariaLabel: "sort articles by",
+							options: [
+								{
+									label:
+										sorting?.["createdAt-desc"] ||
+										"Newest (Created)",
+									value: "createdAt-desc",
+									sortingMethod: (a, b) => {
+										return (
+											new Date(b.pubDate).getTime() -
+											new Date(a.pubDate).getTime()
+										);
+									},
 								},
-							},
-							{
-								label:
-									sorting?.["createdAt-asc"] ||
-									"Oldest (Created)",
-								value: "createdAt-asc",
-								sortingMethod: (a, b) => {
-									return (
-										new Date(a.pubDate).getTime() -
-										new Date(b.pubDate).getTime()
-									);
+								{
+									label:
+										sorting?.["createdAt-asc"] ||
+										"Oldest (Created)",
+									value: "createdAt-asc",
+									sortingMethod: (a, b) => {
+										return (
+											new Date(a.pubDate).getTime() -
+											new Date(b.pubDate).getTime()
+										);
+									},
 								},
-							},
-							{
-								label: sorting?.["name-asc"] || "Name (A-Z)",
-								value: "name-asc",
-								sortingMethod: (a, b) => {
-									return a.title.localeCompare(b.title);
+								{
+									label: sorting?.["name-asc"] || "Name (A-Z)",
+									value: "name-asc",
+									sortingMethod: (a, b) => {
+										return a.title.localeCompare(b.title);
+									},
 								},
-							},
-							{
-								label: sorting?.["name-desc"] || "Name (Z-A)",
-								value: "name-desc",
-								sortingMethod: (a, b) => {
-									return b.title.localeCompare(a.title);
+								{
+									label: sorting?.["name-desc"] || "Name (Z-A)",
+									value: "name-desc",
+									sortingMethod: (a, b) => {
+										return b.title.localeCompare(a.title);
+									},
 								},
-							},
-						],
-						setValue: setSort,
-						value: sort,
-					},
-				],
-			}}
-			CustomCard={(item, index, search) => (
-				<MediumCard data={item} index={index} search={search} />
-			)}
-		/>
+							],
+							setValue: setSort,
+							value: sort,
+						},
+					],
+				}}
+				CustomCard={(item, index, search) => (
+					<MediumCard
+						data={item}
+						index={index}
+						search={search}
+						onSelect={() => setSelectedArticle(item)}
+						translations={translations}
+					/>
+				)}
+			/>
+
+			<AnimatePresence>
+				{selectedArticle && (
+					<ArticleReaderModal
+						article={selectedArticle}
+						close={() => setSelectedArticle(null)}
+						translations={translations}
+					/>
+				)}
+			</AnimatePresence>
+		</>
 	);
 }
 
@@ -101,12 +132,16 @@ interface MediumCardProps<T extends Articles["items"][number]> {
 	data: T;
 	index: number;
 	search: string;
+	onSelect: () => void;
+	translations?: Record<string, string>;
 }
 
 function MediumCard<T extends Articles["items"][number]>({
 	data,
 	index,
 	search,
+	onSelect,
+	translations,
 }: MediumCardProps<T>) {
 	const [showFullDescription, setShowFullDescription] = useState(false);
 	const [imageLoading, setImageLoading] = useState(true);
@@ -140,28 +175,33 @@ function MediumCard<T extends Articles["items"][number]>({
 			viewport={{ once: true }}
 			exit={{ opacity: 0, y: -20 }}
 			transition={{ duration: 0.2, delay: index * 0.08 }}
-			className="p-4 flex flex-col gap-4 bg-white dark:bg-zinc-900 border-2 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+			className="p-4 flex flex-col gap-4 bg-white dark:bg-zinc-900 border-2 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] justify-between"
 		>
 			<div className="pb-4 border-b-2 dark:border-zinc-600 flex flex-col gap-4">
 				<div className="flex items-center gap-4">
 					<Newspaper size={25} className="shrink-0" />
-					<a
-						href={data.link}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="flex items-center justify-between hover:underline"
+					<button
+						type="button"
+						onClick={onSelect}
+						className="cursor-pointer text-left hover:underline focus:outline-none"
 					>
 						<span className="font-semibold uppercase">
 							<Highlight text={data.title} />
 						</span>
-					</a>
+					</button>
 				</div>
 
-				<a
-					href={data.link}
-					target="_blank"
-					rel="noopener noreferrer"
-					className="cursor-pointer relative flex-1 max-h-62.5 border-2 dark:border-zinc-600"
+				<div
+					role="button"
+					tabIndex={0}
+					onClick={onSelect}
+					onKeyDown={(e) => {
+						if (e.key === "Enter" || e.key === " ") {
+							e.preventDefault();
+							onSelect();
+						}
+					}}
+					className="cursor-pointer relative flex-1 max-h-62.5 border-2 dark:border-zinc-600 overflow-hidden group"
 				>
 					{/* skeleton image */}
 					{imageLoading && (
@@ -176,7 +216,7 @@ function MediumCard<T extends Articles["items"][number]>({
 						height={250}
 						loading="lazy"
 						decoding="async"
-						className={`w-full h-full object-cover md:grayscale md:hover:grayscale-0 transition-all duration-300
+						className={`w-full h-full object-cover md:grayscale md:group-hover:grayscale-0 group-hover:scale-105 transition-all duration-300
                             ${imageLoading ? "opacity-0" : "opacity-100"}`}
 						onError={(e) => {
 							setImageLoading(false);
@@ -184,7 +224,7 @@ function MediumCard<T extends Articles["items"][number]>({
 						}}
 						onLoad={() => setImageLoading(false)}
 					/>
-				</a>
+				</div>
 
 				{/* Description */}
 				<p
@@ -238,6 +278,28 @@ function MediumCard<T extends Articles["items"][number]>({
 					))}
 				</div>
 			)}
+
+			<div className="pt-2 border-t-2 dark:border-zinc-700 flex items-center justify-between gap-2">
+				<button
+					type="button"
+					onClick={onSelect}
+					className="cursor-pointer px-3 py-1.5 flex items-center gap-2 text-xs font-bold uppercase border-2 border-zinc-900 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+				>
+					<BookOpen size={14} />
+					<span>{translations?.["read"] || "Read Article"}</span>
+				</button>
+
+				{data.link && (
+					<Button
+						isLink
+						href={data.link}
+						aria-label="View on Medium"
+						className="p-1.5 text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+					>
+						<ExternalLink size={14} />
+					</Button>
+				)}
+			</div>
 		</motion.div>
 	);
 }
