@@ -19,28 +19,18 @@ import {
 	Info,
 	BookMarked,
 } from "lucide-react";
-import { useMemo, useState } from "react";
-import { Doughnut } from "react-chartjs-2";
-import {
-	Chart as ChartJS,
-	ArcElement,
-	Tooltip,
-	Legend,
-	CategoryScale,
-	LinearScale,
-	BarElement,
-} from "chart.js";
+import { lazy, Suspense, useMemo, useState } from "react";
 import ListCards from "../components/ListCards";
 import type { Contributions, LanguagesRepo } from "../lib/schemas";
 
-// Register the necessary Chart.js components
-ChartJS.register(
-	ArcElement,
-	Tooltip,
-	Legend,
-	CategoryScale,
-	LinearScale,
-	BarElement,
+// Lazily load chart.js + react-chartjs-2 so they don't inflate the initial bundle.
+// The wrapper handles registration once the module is loaded.
+const LazyDoughnut = lazy(() =>
+	import("react-chartjs-2").then(async (mod) => {
+		const { Chart, ArcElement, Tooltip, Legend } = await import("chart.js");
+		Chart.register(ArcElement, Tooltip, Legend);
+		return { default: mod.Doughnut };
+	}),
 );
 
 export default function Contributions({ data }: { data: Data }) {
@@ -328,10 +318,12 @@ function TopLangsCard() {
 					<LanguagesBar languages={processedLangs} />
 				) : (
 					<div className="h-60 flex items-center">
-						<Doughnut
-							data={doughnutData.data}
-							options={doughnutData.options}
-						/>
+						<Suspense fallback={<div className="h-60 w-60 animate-pulse bg-zinc-200 dark:bg-zinc-700 rounded-full" />}>
+							<LazyDoughnut
+								data={doughnutData.data}
+								options={doughnutData.options}
+							/>
+						</Suspense>
 					</div>
 				)}
 
@@ -423,10 +415,12 @@ function StatsCard() {
 
 			<div className="flex-1 px-4 py-8 flex flex-col items-center justify-between">
 				<div className="relative h-35 w-35">
-					<Doughnut
-						data={doughnutData.data}
-						options={doughnutData.options}
-					/>
+					<Suspense fallback={<div className="h-35 w-35 animate-pulse bg-zinc-200 dark:bg-zinc-700 rounded-full" />}>
+						<LazyDoughnut
+							data={doughnutData.data}
+							options={doughnutData.options}
+						/>
+					</Suspense>
 
 					{/* Absolutely center the text inside the container */}
 					<div className="absolute inset-0 flex items-center justify-center">

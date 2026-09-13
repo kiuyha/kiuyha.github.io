@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import ListCards from "../components/ListCards";
 import { DataProvider, type Data } from "../contexts/DataContext";
 import {
@@ -11,7 +11,9 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Articles } from "../lib/schemas";
-import ArticleReaderModal from "../components/ArticleReaderModal";
+const ArticleReaderModal = lazy(
+	() => import("../components/ArticleReaderModal"),
+);
 import Button from "../components/Button";
 
 export default function Articles({ data }: { data: Data }) {
@@ -125,11 +127,13 @@ function ArticlesContent({ data }: { data: Data }) {
 
 			<AnimatePresence>
 				{selectedArticle && (
-					<ArticleReaderModal
-						article={selectedArticle}
-						close={() => setSelectedArticle(null)}
-						translations={translations}
-					/>
+					<Suspense fallback={null}>
+						<ArticleReaderModal
+							article={selectedArticle}
+							close={() => setSelectedArticle(null)}
+							translations={translations}
+						/>
+					</Suspense>
 				)}
 			</AnimatePresence>
 		</>

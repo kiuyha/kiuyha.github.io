@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import hljs from "highlight.js";
 import {
 	X,
 	ExternalLink,
@@ -47,6 +46,8 @@ export default function ArticleReaderModal({
 	translations,
 }: ArticleReaderModalProps) {
 	const contentRef = useRef<HTMLDivElement>(null);
+	// Holds the processed HTML — starts null until hljs loads
+	const [processedContent, setProcessedContent] = useState<string | null>(null);
 
 	// Lock body scroll when modal is open
 	useEffect(() => {
@@ -66,10 +67,11 @@ export default function ArticleReaderModal({
 		};
 	}, [close]);
 
-	// Pre-process raw article HTML: classify formula figures and strip tracking pixels
-	const processedContent = useMemo(() => {
+	// Pre-process raw article HTML: classify formula figures and strip tracking pixels.
+	// highlight.js is loaded dynamically so it doesn't inflate the initial bundle.
+	useEffect(() => {
 		const raw = article.content || article.description || "";
-		if (!raw) return "";
+		if (!raw) return;
 
 		// Process figure tags: detect formulas vs diagrams
 		let html = raw.replace(
@@ -128,76 +130,80 @@ export default function ArticleReaderModal({
 		// Process code blocks: auto-detect language with highlight.js, format terminal header, and add copy button
 		const copyLabel = translations?.["copy"] || "Copy";
 
-		html = html.replace(/<pre[^>]*>([\s\S]*?)<\/pre>/gi, (_, innerPre) => {
-			const raw = innerPre.replace(/^<code[^>]*>([\s\S]*?)<\/code>$/i, "$1");
+		// Dynamically import highlight.js only when needed
+		import("highlight.js").then((hljsModule) => {
+			const hljs = hljsModule.default;
+			html = html.replace(/<pre[^>]*>([\s\S]*?)<\/pre>/gi, (_, innerPre) => {
+				const raw = innerPre.replace(/^<code[^>]*>([\s\S]*?)<\/code>$/i, "$1");
 
-			// Normalize newlines and strip inner HTML tags
-			let codeText = raw
-				.replace(/<br\s*\/?>/gi, "\n")
-				.replace(/<\/p><p[^>]*>/gi, "\n")
-				.replace(/<[^>]+>/g, "");
+				// Normalize newlines and strip inner HTML tags
+				let codeText = raw
+					.replace(/<br\s*\/?>/gi, "\n")
+					.replace(/<\/p><p[^>]*>/gi, "\n")
+					.replace(/<[^>]+>/g, "");
 
-			// Decode HTML entities
-			codeText = codeText
-				.replace(/&amp;/g, "&")
-				.replace(/&lt;/g, "<")
-				.replace(/&gt;/g, ">")
-				.replace(/&quot;/g, '"')
-				.replace(/&#39;/g, "'")
-				.replace(/&#x27;/g, "'")
-				.replace(/&nbsp;/g, " ");
+				// Decode HTML entities
+				codeText = codeText
+					.replace(/&amp;/g, "&")
+					.replace(/&lt;/g, "<")
+					.replace(/&gt;/g, ">")
+					.replace(/&quot;/g, '"')
+					.replace(/&#39;/g, "'")
+					.replace(/&#x27;/g, "'")
+					.replace(/&nbsp;/g, " ");
 
-			let highlightedHtml = "";
-			let detectedLang = "code";
+				let highlightedHtml = "";
+				let detectedLang = "code";
 
-			try {
-				const result = hljs.highlightAuto(codeText, COMMON_LANGUAGES);
-				if (result.language) {
-					detectedLang = result.language;
+				try {
+					const result = hljs.highlightAuto(codeText, COMMON_LANGUAGES);
+					if (result.language) {
+						detectedLang = result.language;
+					}
+					highlightedHtml = result.value;
+				} catch {
+					highlightedHtml = codeText
+						.replace(/&/g, "&amp;")
+						.replace(/</g, "&lt;")
+						.replace(/>/g, "&gt;");
 				}
-				highlightedHtml = result.value;
-			} catch {
-				highlightedHtml = codeText
-					.replace(/&/g, "&amp;")
-					.replace(/</g, "&lt;")
-					.replace(/>/g, "&gt;");
-			}
 
-			const langDisplay =
-				detectedLang === "cpp"
-					? "C++"
-					: detectedLang === "python"
-						? "Python"
-						: detectedLang === "javascript"
-							? "JavaScript"
-							: detectedLang === "typescript"
-								? "TypeScript"
-								: detectedLang.toUpperCase();
+				const langDisplay =
+					detectedLang === "cpp"
+						? "C++"
+						: detectedLang === "python"
+							? "Python"
+							: detectedLang === "javascript"
+								? "JavaScript"
+								: detectedLang === "typescript"
+									? "TypeScript"
+									: detectedLang.toUpperCase();
 
-			return `<div class="article-code-wrapper my-6 rounded-lg overflow-hidden border-2 border-zinc-900 dark:border-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-[#282c34]">
-				<div class="article-code-header flex items-center justify-between px-4 py-2.5 bg-[#21252b] border-b-2 border-zinc-900 dark:border-zinc-700 select-none">
-					<div class="flex items-center gap-2">
-						<span class="w-2.5 h-2.5 rounded-full bg-[#ff5f56] inline-block"></span>
-						<span class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e] inline-block"></span>
-						<span class="w-2.5 h-2.5 rounded-full bg-[#27c93f] inline-block"></span>
-						<span class="text-xs font-mono font-bold tracking-wider uppercase text-zinc-400 ml-1.5">${langDisplay}</span>
+				return `<div class="article-code-wrapper my-6 rounded-lg overflow-hidden border-2 border-zinc-900 dark:border-zinc-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-[#282c34]">
+					<div class="article-code-header flex items-center justify-between px-4 py-2.5 bg-[#21252b] border-b-2 border-zinc-900 dark:border-zinc-700 select-none">
+						<div class="flex items-center gap-2">
+							<span class="w-2.5 h-2.5 rounded-full bg-[#ff5f56] inline-block"></span>
+							<span class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e] inline-block"></span>
+							<span class="w-2.5 h-2.5 rounded-full bg-[#27c93f] inline-block"></span>
+							<span class="text-xs font-mono font-bold tracking-wider uppercase text-zinc-400 ml-1.5">${langDisplay}</span>
+						</div>
+						<button type="button" class="article-copy-btn inline-flex items-center gap-1.5 px-3 py-1 text-xs font-mono font-bold uppercase rounded border-2 border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer" aria-label="Copy code">
+							<svg class="copy-icon w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+							<svg class="check-icon hidden w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+							<span class="copy-text">${copyLabel}</span>
+						</button>
 					</div>
-					<button type="button" class="article-copy-btn inline-flex items-center gap-1.5 px-3 py-1 text-xs font-mono font-bold uppercase rounded border-2 border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700 hover:text-white transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer" aria-label="Copy code">
-						<svg class="copy-icon w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-						<svg class="check-icon hidden w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-						<span class="copy-text">${copyLabel}</span>
-					</button>
-				</div>
-				<pre class="p-4 m-0 overflow-x-auto font-mono text-xs sm:text-sm leading-relaxed text-[#abb2bf] bg-[#282c34]"><code class="hljs language-${detectedLang}">${highlightedHtml}</code></pre>
-			</div>`;
-		});
+					<pre class="p-4 m-0 overflow-x-auto font-mono text-xs sm:text-sm leading-relaxed text-[#abb2bf] bg-[#282c34]"><code class="hljs language-${detectedLang}">${highlightedHtml}</code></pre>
+				</div>`;
+			});
 
-		return html;
+			setProcessedContent(html);
+		});
 	}, [article.content, article.description, translations]);
 
 	// Post-mount dynamic detection: inspect rendered image aspect ratios & dimensions
 	useEffect(() => {
-		if (!contentRef.current) return;
+		if (!contentRef.current || processedContent === null) return;
 
 		const container = contentRef.current;
 		const imgs = container.querySelectorAll("img");
@@ -268,7 +274,7 @@ export default function ArticleReaderModal({
 
 	// Event delegation for copy buttons inside article code blocks
 	useEffect(() => {
-		if (!contentRef.current) return;
+		if (!contentRef.current || processedContent === null) return;
 		const container = contentRef.current;
 
 		const handleContainerClick = async (e: MouseEvent) => {
@@ -337,16 +343,16 @@ export default function ArticleReaderModal({
 	}, [processedContent, translations]);
 
 	// Calculate estimated read time in minutes
-	const readTimeMinutes = useMemo(() => {
+	const readTimeMinutes = (() => {
 		const text = (article.content || article.description || "").replace(
 			/<[^>]+>/g,
 			" ",
 		);
 		const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
 		return Math.max(1, Math.ceil(wordCount / 200));
-	}, [article.content, article.description]);
+	})();
 
-	const formattedDate = useMemo(() => {
+	const formattedDate = (() => {
 		try {
 			return new Date(article.pubDate).toLocaleDateString("en-US", {
 				year: "numeric",
@@ -356,7 +362,7 @@ export default function ArticleReaderModal({
 		} catch {
 			return article.pubDate;
 		}
-	}, [article.pubDate]);
+	})();
 
 	return (
 		<motion.div
@@ -463,7 +469,7 @@ export default function ArticleReaderModal({
 							ref={contentRef}
 							className="article-prose mt-4 text-justify sm:text-left"
 							dangerouslySetInnerHTML={{
-								__html: processedContent,
+								__html: processedContent ?? "",
 							}}
 						/>
 
