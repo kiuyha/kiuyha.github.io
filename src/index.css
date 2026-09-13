@@ -94,6 +94,7 @@
 	color: #d4d4d8; /* zinc-300 */
 }
 
+/* Base pre styling for raw code blocks */
 .article-prose pre {
 	margin-top: 1.75rem;
 	margin-bottom: 1.75rem;
@@ -112,6 +113,125 @@
 	background-color: #09090b; /* zinc-950 */
 	color: #e4e4e7;
 	border-color: #3f3f46; /* zinc-700 */
+}
+
+/* Enhanced Code Block Container with Terminal Header and Copy Button */
+.article-code-wrapper {
+	margin-top: 1.75rem;
+	margin-bottom: 1.75rem;
+	border-radius: 0.5rem;
+	overflow: hidden;
+	border: 2px solid #18181b;
+	box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+	background-color: #282c34;
+}
+
+:where(.dark, .dark *) .article-code-wrapper {
+	border-color: #3f3f46;
+	box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.7);
+	background-color: #1e1e24;
+}
+
+.article-code-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.625rem 1rem;
+	background-color: #21252b;
+	border-bottom: 2px solid #18181b;
+	user-select: none;
+}
+
+:where(.dark, .dark *) .article-code-header {
+	background-color: #141418;
+	border-bottom-color: #3f3f46;
+}
+
+.article-code-wrapper pre {
+	margin: 0 !important;
+	padding: 1.25rem 1rem !important;
+	border: none !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	background-color: #282c34 !important;
+	overflow-x: auto;
+}
+
+:where(.dark, .dark *) .article-code-wrapper pre {
+	background-color: #1e1e24 !important;
+}
+
+.article-code-wrapper code.hljs {
+	display: block;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	font-size: 0.875rem;
+	line-height: 1.65;
+	color: #abb2bf;
+	background: transparent !important;
+	padding: 0 !important;
+	border: none !important;
+}
+
+/* Atom One Dark Syntax Tokens */
+.hljs-comment,
+.hljs-quote {
+	color: #5c6370;
+	font-style: italic;
+}
+.hljs-doctag,
+.hljs-keyword,
+.hljs-formula {
+	color: #c678dd;
+	font-weight: 600;
+}
+.hljs-section,
+.hljs-name,
+.hljs-selector-tag,
+.hljs-deletion,
+.hljs-subst {
+	color: #e06c75;
+}
+.hljs-literal {
+	color: #56b6c2;
+}
+.hljs-string,
+.hljs-regexp,
+.hljs-addition,
+.hljs-attribute,
+.hljs-meta .hljs-string {
+	color: #98c379;
+}
+.hljs-attr,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-type,
+.hljs-selector-class,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-number {
+	color: #d19a66;
+}
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link,
+.hljs-meta,
+.hljs-selector-id,
+.hljs-title {
+	color: #61aeee;
+}
+.hljs-built_in,
+.hljs-title.class_,
+.hljs-class .hljs-title {
+	color: #e6c07b;
+}
+.hljs-emphasis {
+	font-style: italic;
+}
+.hljs-strong {
+	font-weight: bold;
+}
+.hljs-link {
+	text-decoration: underline;
 }
 
 .article-prose code {
@@ -146,11 +266,47 @@
 	border-radius: 0.5rem;
 	border: 2px solid #18181b;
 	box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+	transition: filter 0.2s ease, border-color 0.2s ease;
 }
 
 :where(.dark, .dark *) .article-prose figure img {
 	border-color: #52525b; /* zinc-600 */
 	box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.7);
+}
+
+/* Specific styling for math/formula images (both light and dark mode) */
+.article-prose figure.article-formula-figure {
+	margin-top: 1.25rem;
+	margin-bottom: 1.25rem;
+	padding: 0.5rem 0;
+	background: transparent;
+}
+
+.article-prose figure.article-formula-figure img,
+.article-prose img.article-formula-img {
+	border: none !important;
+	box-shadow: none !important;
+	border-radius: 0.25rem !important;
+	background: transparent !important;
+	max-height: 220px;
+	width: auto;
+	object-fit: contain;
+	display: inline-block;
+	padding: 0.25rem 0.5rem;
+}
+
+/* In Dark Mode: Invert ONLY mathematical formulas so black text turns into clean white formula text */
+:where(.dark, .dark *) .article-prose figure.article-formula-figure img,
+:where(.dark, .dark *) .article-prose img.article-formula-img {
+	filter: invert(1) brightness(1.25) contrast(1.1);
+	border: none !important;
+	box-shadow: none !important;
+	background: transparent !important;
+}
+
+/* Explicitly prevent inversion on normal diagrams, charts, memes, and photos */
+:where(.dark, .dark *) .article-prose figure:not(.article-formula-figure) img:not(.article-formula-img) {
+	filter: none !important;
 }
 
 .article-prose figcaption {

@@ -668,6 +668,7 @@ function WorkExperienceSection({
 						<ExperienceCardItem
 							key={`${exp.role}-${exp.company}-${index}`}
 							exp={exp}
+							search={search}
 							currentLang={currentLang}
 							allProjects={allProjects}
 							onSelectProject={onSelectProject}
@@ -689,11 +690,13 @@ function WorkExperienceSection({
 
 function ExperienceCardItem({
 	exp,
+	search,
 	currentLang,
 	allProjects,
 	onSelectProject,
 }: {
 	exp: Experience;
+	search: string;
 	currentLang: string;
 	allProjects: Project[];
 	onSelectProject: (p: Project) => void;
@@ -702,6 +705,29 @@ function ExperienceCardItem({
 		translations: { details: translations },
 	} = useData();
 	const [showFullDescription, setShowFullDescription] = useState(false);
+
+	const Highlight = ({ text }: { text: string }) => {
+		if (!search.trim()) {
+			return <span>{text}</span>;
+		}
+		const escaped = search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		const regex = new RegExp(`(${escaped})`, "gi");
+		const parts = text.split(regex);
+
+		return (
+			<span>
+				{parts.map((part, i) =>
+					regex.test(part) ? (
+						<mark key={i} className="bg-yellow-500 text-black">
+							{part}
+						</mark>
+					) : (
+						<span key={i}>{part}</span>
+					),
+				)}
+			</span>
+		);
+	};
 
 	const description = useMemo(() => {
 		const raw =
@@ -744,10 +770,12 @@ function ExperienceCardItem({
 			<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-900/15 dark:border-zinc-700 pb-3">
 				<div>
 					<h3 className="text-lg md:text-xl font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-						<span>{exp.role}</span>
+						<span>
+							<Highlight text={exp.role} />
+						</span>
 					</h3>
 					<p className="text-base font-bold text-zinc-700 dark:text-zinc-300 mt-0.5">
-						{exp.company}
+						<Highlight text={exp.company} />
 					</p>
 				</div>
 
@@ -791,7 +819,7 @@ function ExperienceCardItem({
 						showFullDescription ? "" : "line-clamp-3"
 					}`}
 				>
-					{description}
+					<Highlight text={description} />
 				</p>
 			)}
 
@@ -803,7 +831,7 @@ function ExperienceCardItem({
 							key={si}
 							className="text-xs font-mono font-semibold px-2 py-0.5 border border-zinc-900 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800"
 						>
-							{skill}
+							<Highlight text={skill} />
 						</span>
 					))}
 				</div>
@@ -825,7 +853,9 @@ function ExperienceCardItem({
 							title={`View ${p.name} details`}
 						>
 							<FolderGit2 size={12} />
-							<span>{p.name}</span>
+							<span>
+								<Highlight text={p.name} />
+							</span>
 							<ExternalLink size={11} />
 						</button>
 					))}
