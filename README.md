@@ -1,7 +1,7 @@
 # Portfolio Website
 
 
-This is web created using AstroJS and React. You can test it in <a href="https://kiuyha.my.id" target="_blank">kiuyha.my.id</a>
+This is web created using AstroJS and React. You can test it in <a href="https://kiuyha.dev" target="_blank">kiuyha.dev</a>
 
 ## Features
 - **Neobrutalist UI**. This website use neobrutalist UI.

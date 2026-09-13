@@ -7,7 +7,7 @@ import {
 
 async function fetchGithubContributions(): Promise<unknown> {
 	const username = import.meta.env.VITE_GITHUB_LINK.split("/")?.[3] || "kiuyha";
-	const baseHost = import.meta.env.VITE_GITHUB_API_LINK || "https://github-stats.kiuyha.my.id";
+	const baseHost = import.meta.env.VITE_GITHUB_API_LINK || "https://github-stats.kiuyha.dev";
 	const basePath = `/api/portfolio-data`;
 	const queryParams = new URLSearchParams({
 		username: username,

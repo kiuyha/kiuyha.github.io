@@ -9,7 +9,7 @@ export default defineConfig({
 		react(),
 		sitemap(),
 	],
-	site: import.meta.env.VITE_WEBSITE_LINK || "https://kiuyha.my.id",
+	site: import.meta.env.VITE_WEBSITE_LINK || "https://kiuyha.dev",
 	build: {
 		assets: "assets",
 		format: "directory",
