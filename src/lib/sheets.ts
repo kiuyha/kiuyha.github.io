@@ -132,6 +132,7 @@ const ParseAchievementSchema = z.array(
 			skills: z.string(),
 			images: z.string(),
 		})
+		.catchall(z.string())
 		.transform((item) => {
 			return {
 				...item,

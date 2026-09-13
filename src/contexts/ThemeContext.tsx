@@ -12,10 +12,17 @@ const ThemeContext = createContext<{
 } | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-	const [darkMode, setDarkMode] = useState<boolean>(
-		typeof window !== "undefined" &&
-			localStorage.getItem("theme") === "dark",
-	);
+	// Always start with false for SSR to avoid hydration mismatch.
+	// The real value is synced from localStorage in useEffect after mount.
+	const [darkMode, setDarkMode] = useState<boolean>(false);
+
+	// Sync from localStorage on first mount
+	useEffect(() => {
+		const stored = localStorage.getItem("theme");
+		if (stored === "dark") {
+			setDarkMode(true);
+		}
+	}, []);
 
 	useEffect(() => {
 		const setTheme = () =>

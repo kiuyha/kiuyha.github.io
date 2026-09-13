@@ -26,8 +26,11 @@ export function LanguageSwitcher() {
 	const { supportedLangs, currentLang } = useData();
 	const [isOpen, setIsOpen] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
-	const currentPath =
-		typeof window !== "undefined" && window.location.pathname;
+	const [currentPath, setCurrentPath] = useState<string | false>(false);
+
+	useEffect(() => {
+		setCurrentPath(window.location.pathname);
+	}, []);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
