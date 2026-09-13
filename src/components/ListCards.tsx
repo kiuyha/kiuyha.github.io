@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { File, RefreshCcw, Search } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import { Check, ChevronDown, File, RefreshCcw, Search, X } from "lucide-react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 interface CardConfig<TData extends Record<string, unknown>> {
 	titleField?: keyof TData;
@@ -18,6 +18,19 @@ interface CardConfig<TData extends Record<string, unknown>> {
 	};
 }
 
+export interface SelectFieldConfig<TData extends Record<string, unknown>> {
+	name: string;
+	label: string;
+	ariaLabel?: string;
+	options: {
+		label: string;
+		value: string;
+		sortingMethod?: (a: TData, b: TData) => number;
+	}[];
+	setValue: React.Dispatch<React.SetStateAction<string>>;
+	value: string;
+}
+
 interface ListCardsProps<TData extends Record<string, unknown>> {
 	title: string;
 	dataSet: TData[];
@@ -27,18 +40,7 @@ interface ListCardsProps<TData extends Record<string, unknown>> {
 	};
 	filterConfig: {
 		canReset?: boolean;
-		selectField: {
-			name: string;
-			label: string;
-			ariaLabel?: string;
-			options: {
-				label: string;
-				value: string;
-				sortingMethod?: (a: TData, b: TData) => number;
-			}[];
-			setValue: React.Dispatch<React.SetStateAction<string>>;
-			value: string;
-		}[];
+		selectField: SelectFieldConfig<TData>[];
 	};
 	cardConfig?: CardConfig<TData>;
 	CustomCard?: (
@@ -56,6 +58,37 @@ interface ListCardsProps<TData extends Record<string, unknown>> {
 	) => React.ReactNode;
 }
 
+function getValueByPath(
+	obj: unknown,
+	path: string | string[],
+): unknown {
+	const parts = Array.isArray(path) ? path : path.split(".");
+	const [currentPart, ...remainingParts] = parts;
+
+	if (obj == null || currentPart === undefined) {
+		return obj;
+	}
+
+	if (currentPart === "*") {
+		if (!Array.isArray(obj)) {
+			return undefined;
+		}
+		return obj.map((item) => getValueByPath(item, remainingParts));
+	}
+
+	if (
+		typeof obj === "object" &&
+		currentPart in (obj as Record<string, unknown>)
+	) {
+		return getValueByPath(
+			(obj as Record<string, unknown>)[currentPart],
+			remainingParts,
+		);
+	}
+
+	return undefined;
+}
+
 export default function ListCards<TData extends Record<string, unknown>>({
 	title,
 	dataSet,
@@ -68,6 +101,8 @@ export default function ListCards<TData extends Record<string, unknown>>({
 	const titleCardKey =
 		cardConfig && (cardConfig.titleField as string | undefined);
 	const [search, setSearch] = useState("");
+	const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
 	const groupedSelectFields = useMemo(() => {
 		const result = [];
 		const chunkSize = 2;
@@ -76,33 +111,6 @@ export default function ListCards<TData extends Record<string, unknown>>({
 		}
 		return result;
 	}, [filterConfig.selectField]);
-
-	function getValueByPath(obj: any, path: string | string[]): any {
-		// Convert path to an array if it's a string
-		const parts = Array.isArray(path) ? path : path.split(".");
-
-		// Destructure the first part and the rest of the path
-		const [currentPart, ...remainingParts] = parts;
-
-		// If the object is null/undefined or the path is exhausted, return the object
-		if (obj == null || currentPart === undefined) {
-			return obj;
-		}
-
-		if (currentPart === "*") {
-			// If we hit a wildcard, the current value must be an array
-			if (!Array.isArray(obj)) {
-				return undefined;
-			}
-			// Map over the array and recursively call the function for each item
-			// with the rest of the path. This will collect the results.
-			return obj.map((item) => getValueByPath(item, remainingParts));
-		}
-
-		// If it's a normal key, just move to the next level of the object
-		// and recurse with the rest of the path.
-		return getValueByPath(obj[currentPart], remainingParts);
-	}
 
 	const processedData = useMemo(() => {
 		const filtered = dataSet.filter((data) => {
@@ -155,7 +163,8 @@ export default function ListCards<TData extends Record<string, unknown>>({
 	}, [
 		dataSet,
 		search,
-		...filterConfig.selectField.map((select) => select.value),
+		filterConfig.selectField,
+		searchConfig,
 	]);
 
 	return (
@@ -166,7 +175,7 @@ export default function ListCards<TData extends Record<string, unknown>>({
 				animate={{ rotateX: 0 }}
 				exit={{ rotateX: 90 }}
 				transition={{ duration: 0.5 }}
-				className="font-semibold  px-4 py-2 flex gap-2 items-center bg-white dark:bg-zinc-900 border-2 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+				className="font-semibold px-4 py-2 flex gap-2 items-center bg-white dark:bg-zinc-900 border-2 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
 			>
 				<File size={25} />
 				<h1 className="text-md">{title}</h1>
@@ -209,50 +218,26 @@ export default function ListCards<TData extends Record<string, unknown>>({
 						animate={{ rotateX: 0 }}
 						exit={{ rotateX: 90 }}
 						transition={{ duration: 0.5 }}
-						className={`flex gap-2 items-center bg-white dark:bg-zinc-900 border-2 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
-							${searchConfig ? "lg:border-0 lg:shadow-none" : ""}`}
+						className={`flex items-center bg-white dark:bg-zinc-900 border-2 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative ${
+							group.some((f) => f.name === openDropdown)
+								? "z-40"
+								: "z-10"
+						} ${searchConfig ? "lg:border-0 lg:shadow-none" : ""}`}
 					>
 						{group.map((field, index) => (
-							<motion.select
+							<SearchableSelect
 								key={field.name + index}
-								whileTap={{ scale: 0.95 }}
-								value={field.value}
-								onChange={(e) => {
-									e.preventDefault();
-									field.setValue(e.target.value);
-								}}
-								aria-label={field.ariaLabel}
-								title={
-									field.options.find(
-										(opt) => opt.value === field.value,
-									)?.label || field.label
+								field={field}
+								index={index}
+								searchConfig={Boolean(searchConfig)}
+								isOpen={openDropdown === field.name}
+								onToggle={() =>
+									setOpenDropdown((prev) =>
+										prev === field.name ? null : field.name,
+									)
 								}
-								className={`min-w-0 flex-1 text-sm lg:text-base truncate cursor-pointer px-2 py-2 font-semibold uppercase h-full dark:border-zinc-600 outline-none
-									${searchConfig ? "lg:border-l-4" : ""} ${index === 1 ? "border-l-4" : ""}`}
-							>
-								{field.name !== "sort" && (
-									<option
-										value=""
-										className="dark:bg-zinc-900"
-									>
-										{field.label
-											.replace("_", " ")
-											.toUpperCase()}
-									</option>
-								)}
-
-								{field.options.map((option, index) => (
-									<option
-										key={index}
-										value={option.value}
-										className="dark:bg-zinc-900"
-									>
-										{option.label
-											.replace("_", " ")
-											.toUpperCase()}
-									</option>
-								))}
-							</motion.select>
+								onClose={() => setOpenDropdown(null)}
+							/>
 						))}
 
 						{/* Reset filters */}
@@ -267,10 +252,11 @@ export default function ListCards<TData extends Record<string, unknown>>({
 											},
 										);
 										setSearch("");
+										setOpenDropdown(null);
 									}}
 									whileHover={{ scale: 0.9 }}
 									aria-label="reset filters"
-									className="cursor-pointer border-l-4 px-4 py-2 dark:border-zinc-600"
+									className="cursor-pointer border-l-4 px-4 py-2 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
 								>
 									<RefreshCcw size={25} />
 								</motion.button>
@@ -310,6 +296,227 @@ export default function ListCards<TData extends Record<string, unknown>>({
 					})}
 				</AnimatePresence>
 			</div>
+		</div>
+	);
+}
+
+interface SearchableSelectProps<TData extends Record<string, unknown>> {
+	field: SelectFieldConfig<TData>;
+	index: number;
+	searchConfig: boolean;
+	isOpen: boolean;
+	onToggle: () => void;
+	onClose: () => void;
+}
+
+function SearchableSelect<TData extends Record<string, unknown>>({
+	field,
+	index,
+	searchConfig,
+	isOpen,
+	onToggle,
+	onClose,
+}: SearchableSelectProps<TData>) {
+	const containerRef = useRef<HTMLDivElement>(null);
+	const searchRef = useRef<HTMLInputElement>(null);
+	const [searchTerm, setSearchTerm] = useState("");
+
+	useEffect(() => {
+		if (isOpen) {
+			const timer = setTimeout(() => {
+				searchRef.current?.focus();
+			}, 50);
+			return () => clearTimeout(timer);
+		} else {
+			setSearchTerm("");
+		}
+	}, [isOpen]);
+
+	useEffect(() => {
+		if (!isOpen) return;
+
+		const handleClickOutside = (e: MouseEvent) => {
+			if (
+				containerRef.current &&
+				!containerRef.current.contains(e.target as Node)
+			) {
+				onClose();
+			}
+		};
+
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === "Escape") {
+				onClose();
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		document.addEventListener("keydown", handleKeyDown);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+			document.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [isOpen, onClose]);
+
+	const filteredOptions = useMemo(() => {
+		if (!searchTerm.trim()) return field.options;
+		const term = searchTerm.trim().toLowerCase();
+		return field.options.filter(
+			(opt) =>
+				opt.label.toLowerCase().includes(term) ||
+				opt.value.toLowerCase().includes(term) ||
+				opt.label.replace(/[-_]/g, " ").toLowerCase().includes(term),
+		);
+	}, [field.options, searchTerm]);
+
+	const selectedOption = field.options.find(
+		(opt) => opt.value === field.value,
+	);
+
+	const displayLabel = selectedOption
+		? selectedOption.label.replace(/[-_]/g, " ")
+		: field.name === "sort"
+			? field.options[0]?.label.replace(/[-_]/g, " ") || field.label
+			: field.label.replace(/[-_]/g, " ");
+
+	return (
+		<div
+			ref={containerRef}
+			className={`relative flex-1 min-w-0 h-full ${isOpen ? "z-50" : "z-10"}`}
+		>
+			<button
+				type="button"
+				onClick={onToggle}
+				aria-label={field.ariaLabel || field.label}
+				aria-expanded={isOpen}
+				title={displayLabel}
+				className={`w-full min-w-0 flex items-center justify-between gap-1.5 px-3 py-2 text-sm lg:text-base font-semibold uppercase cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition outline-none dark:border-zinc-600 ${
+					searchConfig ? "lg:border-l-4" : ""
+				} ${index === 1 ? "border-l-4" : ""}`}
+			>
+				<span className="truncate text-left">{displayLabel}</span>
+				<div className="flex items-center gap-1 shrink-0 ml-1">
+					{field.name !== "sort" && field.value !== "" && (
+						<span
+							role="button"
+							tabIndex={0}
+							onClick={(e) => {
+								e.stopPropagation();
+								field.setValue("");
+								onClose();
+							}}
+							className="p-0.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition"
+							title="Clear filter"
+						>
+							<X size={14} />
+						</span>
+					)}
+					<ChevronDown
+						size={18}
+						className={`transition-transform duration-200 text-zinc-500 dark:text-zinc-400 ${
+							isOpen ? "rotate-180" : ""
+						}`}
+					/>
+				</div>
+			</button>
+
+			<AnimatePresence>
+				{isOpen && (
+					<motion.div
+						initial={{ opacity: 0, y: -4 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -4 }}
+						transition={{ duration: 0.15 }}
+						className={`absolute top-full mt-1.5 w-full min-w-[220px] max-w-xs z-50 bg-white dark:bg-zinc-900 border-2 border-zinc-900 dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col ${
+							index === 1 ? "sm:right-0 sm:left-auto" : "left-0"
+						}`}
+					>
+						{/* Search input if options count >= 3 */}
+						{field.options.length >= 3 && (
+							<div className="p-2 border-b-2 border-zinc-200 dark:border-zinc-700 flex items-center gap-2 bg-zinc-50 dark:bg-zinc-800">
+								<Search size={14} className="text-zinc-400 shrink-0" />
+								<input
+									ref={searchRef}
+									type="text"
+									value={searchTerm}
+									onChange={(e) => setSearchTerm(e.target.value)}
+									placeholder={`Search...`}
+									className="w-full bg-transparent outline-none text-xs font-semibold text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 uppercase"
+								/>
+								{searchTerm && (
+									<button
+										type="button"
+										onClick={() => setSearchTerm("")}
+										className="cursor-pointer text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+									>
+										<X size={14} />
+									</button>
+								)}
+							</div>
+						)}
+
+						{/* Options list */}
+						<div className="max-h-56 overflow-y-auto divide-y divide-zinc-100 dark:divide-zinc-800">
+							{field.name !== "sort" && (
+								<button
+									type="button"
+									onClick={() => {
+										field.setValue("");
+										onClose();
+									}}
+									className={`w-full text-left px-3 py-2 text-xs lg:text-sm font-semibold uppercase flex items-center justify-between transition cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 ${
+										field.value === ""
+											? "bg-zinc-100 dark:bg-zinc-800 text-blue-600 dark:text-blue-400 font-bold"
+											: ""
+									}`}
+								>
+									<span className="truncate mr-2">
+										{`ALL ${field.label.replace(/[-_]/g, " ")}`}
+									</span>
+									{field.value === "" && (
+										<Check
+											size={14}
+											className="shrink-0 text-blue-600 dark:text-blue-400"
+										/>
+									)}
+								</button>
+							)}
+
+							{filteredOptions.length === 0 ? (
+								<div className="px-3 py-3 text-xs text-center text-zinc-400 dark:text-zinc-500 font-medium uppercase">
+									No matches found
+								</div>
+							) : (
+								filteredOptions.map((opt) => (
+									<button
+										key={opt.value}
+										type="button"
+										onClick={() => {
+											field.setValue(opt.value);
+											onClose();
+										}}
+										className={`w-full text-left px-3 py-2 text-xs lg:text-sm font-semibold uppercase flex items-center justify-between transition cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 ${
+											field.value === opt.value
+												? "bg-zinc-100 dark:bg-zinc-800 text-blue-600 dark:text-blue-400 font-bold"
+												: ""
+										}`}
+									>
+										<span className="truncate mr-2">
+											{opt.label.replace(/[-_]/g, " ")}
+										</span>
+										{field.value === opt.value && (
+											<Check
+												size={14}
+												className="shrink-0 text-blue-600 dark:text-blue-400"
+											/>
+										)}
+									</button>
+								))
+							)}
+						</div>
+					</motion.div>
+				)}
+			</AnimatePresence>
 		</div>
 	);
 }
