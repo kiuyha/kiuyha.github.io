@@ -1,16 +1,33 @@
 import { motion, type Variants } from "framer-motion";
-import { tooltipVariants as defaultTooltipVariants } from "./NavBar";
+
+const defaultTooltipVariants: Variants = {
+	hidden: {
+		opacity: 0,
+		y: -10,
+		transition: { duration: 0.2 },
+	},
+	visible: {
+		opacity: 1,
+		y: 0,
+		transition: { duration: 0.2 },
+	},
+};
 
 interface ButtonProps {
 	href?: string;
+	isLink?: boolean;
 	ariaLabel?: string;
 	parentVariance?: Variants;
 	tooltipVariants?: Variants;
 	tooltip?: string;
 	children: React.ReactNode;
 	className?: string;
-	[rest: string]: any;
+	target?: string;
+	rel?: string;
+	onClick?: (e: React.MouseEvent<HTMLElement>) => void;
+	[key: string]: unknown;
 }
+
 const defaultParentVariance = {
 	hidden: {
 		scale: 1,
@@ -25,15 +42,18 @@ const defaultParentVariance = {
 export default function Button(props: ButtonProps) {
 	const {
 		href,
+		isLink,
 		children,
-		className,
+		className = "",
 		parentVariance,
 		tooltipVariants,
 		ariaLabel,
 		tooltip,
+		target,
+		rel,
 		...rest
 	} = props;
-	const Component = href ? motion.a : motion.button;
+	const Component = href || isLink ? motion.a : motion.button;
 
 	return (
 		<Component
@@ -45,8 +65,12 @@ export default function Button(props: ButtonProps) {
 			{...(href
 				? {
 						href,
-						target: "_blank",
-						rel: "noopener noreferrer",
+						...(href.startsWith("mailto:")
+							? {}
+							: {
+									target: target ?? "_blank",
+									rel: rel ?? "noopener noreferrer",
+								}),
 					}
 				: {})}
 			{...rest}

@@ -1,31 +1,45 @@
 import { LoaderCircle } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function LoadingScreen() {
+interface LoadingScreenProps {
+	translations?: Record<string, string>;
+}
+
+export default function LoadingScreen({ translations }: LoadingScreenProps) {
+	const [isVisible, setIsVisible] = useState(true);
 	const [imgError, setImgError] = useState(false);
-	const loadingRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		document.body.classList.add("overflow-hidden");
-
-		const removeLoading = () => {
+		const dismiss = () => {
 			document.body.classList.remove("overflow-hidden");
-			loadingRef.current?.remove();
+			setIsVisible(false);
 		};
 
 		if (document.readyState === "complete") {
-			removeLoading();
-		} else {
-			window.addEventListener("load", removeLoading);
-			return () => window.removeEventListener("load", removeLoading);
+			dismiss();
+			return;
 		}
+
+		document.body.classList.add("overflow-hidden");
+		window.addEventListener("load", dismiss, { once: true });
+		document.addEventListener("DOMContentLoaded", dismiss, { once: true });
+		document.addEventListener("astro:page-load", dismiss, { once: true });
+
+		const timer = setTimeout(dismiss, 200);
+
+		return () => {
+			clearTimeout(timer);
+			window.removeEventListener("load", dismiss);
+			document.removeEventListener("DOMContentLoaded", dismiss);
+			document.removeEventListener("astro:page-load", dismiss);
+			document.body.classList.remove("overflow-hidden");
+		};
 	}, []);
 
+	if (!isVisible) return null;
+
 	return (
-		<div
-			ref={loadingRef}
-			className="inset-0 fixed z-999 flex items-center justify-center min-h-screen bg-gray-100 dark:bg-zinc-900"
-		>
+		<div className="inset-0 fixed z-999 flex items-center justify-center min-h-screen bg-gray-100 dark:bg-zinc-900">
 			<div className="flex flex-col items-center text-black dark:text-white">
 				{imgError ? (
 					<LoaderCircle size={100} className="animate-spin mb-4" />
@@ -41,7 +55,9 @@ export default function LoadingScreen() {
 						onError={() => setImgError(true)}
 					/>
 				)}
-				<p className="text-2xl font-bold">Loading...</p>
+				<p className="text-2xl font-bold">
+					{translations?.["loading"] || "Loading..."}
+				</p>
 			</div>
 		</div>
 	);

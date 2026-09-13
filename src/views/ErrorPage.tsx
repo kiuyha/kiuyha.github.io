@@ -5,9 +5,11 @@ import { ThemeProvider } from "../contexts/ThemeContext";
 export default function ErrorPage({
 	error,
 	errorCode,
+	translations,
 }: {
 	error: Error;
 	errorCode?: string;
+	translations?: Record<string, string>;
 }) {
 	return (
 		<ThemeProvider>
@@ -15,11 +17,16 @@ export default function ErrorPage({
 				<Background />
 				<div className="flex flex-col relative w-full h-screen text-black dark:text-white">
 					<div className="flex flex-col justify-center items-center flex-grow text-center p-8">
-						<span className="text-6xl font-bold">Oops!</span>
+						<span className="text-6xl font-bold">
+							{translations?.["oops"] || "Oops!"}
+						</span>
 						<p className="text-lg mt-4">{error.message}</p>
 						{errorCode && (
 							<div className="mt-2 flex items-center gap-2">
-								<span>Error Code:</span>
+								<span>
+									{translations?.["error-code"] ||
+										"Error Code:"}
+								</span>
 								<span className="font-semibold">{errorCode}</span>
 							</div>
 						)}
@@ -39,7 +46,8 @@ export default function ErrorPage({
 										boxShadow: "4px 4px 0px 0px rgba(0,0,0,1)",
 									}}
 								>
-									Back to homepage
+									{translations?.["back-home"] ||
+										"Back to homepage"}
 								</motion.span>
 							</a>
 						</div>

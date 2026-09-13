@@ -3,10 +3,13 @@ import z from "zod";
 import {
 	AchievementSchema,
 	BaseAchievementSchema,
+	BaseExperienceSchema,
 	BaseProjectSchema,
+	ExperienceSchema,
 	ProjectSchema,
 	SupportedLangSchema,
 	type Achievement,
+	type Experience,
 	type Project,
 	type SupportedLang,
 	type Translations,
@@ -157,3 +160,58 @@ export async function fetchAchievements(): Promise<Achievement[]> {
 
 	return validResult.data;
 }
+
+const ParseExperienceSchema = z.array(
+	BaseExperienceSchema.omit({
+		skills: true,
+		projects: true,
+	})
+		.extend({
+			skills: z.string().optional().default(""),
+			projects: z.string().optional().default(""),
+			location: z.string().optional().default(""),
+			type: z.string().optional().default("Full-time"),
+			end_date: z.string().optional().default("Present"),
+			link: z.string().optional().default(""),
+		})
+		.catchall(z.string())
+		.transform((item) => {
+			return {
+				...item,
+				location: item.location || "",
+				type: item.type || "Full-time",
+				end_date: item.end_date || "Present",
+				link: item.link || "",
+				skills: item.skills
+					? item.skills.split(",").map((s) => s.trim()).filter(Boolean)
+					: [],
+				projects: item.projects
+					? item.projects.split(",").map((p) => p.trim()).filter(Boolean)
+					: [],
+			};
+		})
+		.pipe(ExperienceSchema),
+);
+
+export async function fetchExperiences(): Promise<Experience[]> {
+	try {
+		const data = await fetchData("Experiences");
+		if (!data || data.length === 0 || !("role" in data[0])) {
+			return [];
+		}
+
+		const validResult = ParseExperienceSchema.safeParse(data);
+		if (!validResult.success) {
+			console.warn(
+				"Could not parse Experiences sheet, using empty list:",
+				validResult.error.message,
+			);
+			return [];
+		}
+
+		return validResult.data.reverse();
+	} catch {
+		return [];
+	}
+}
+

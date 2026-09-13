@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import ListCards from "../components/ListCards";
-import { type Data } from "../contexts/DataContext";
+import { DataProvider, type Data } from "../contexts/DataContext";
 import {
 	Newspaper,
 	Calendar,
@@ -15,6 +15,14 @@ import ArticleReaderModal from "../components/ArticleReaderModal";
 import Button from "../components/Button";
 
 export default function Articles({ data }: { data: Data }) {
+	return (
+		<DataProvider initialData={data}>
+			<ArticlesContent data={data} />
+		</DataProvider>
+	);
+}
+
+function ArticlesContent({ data }: { data: Data }) {
 	const {
 		translations: { articles: translations, sorting },
 		articles,

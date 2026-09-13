@@ -9,6 +9,7 @@ import {
 	type Achievement,
 	type Articles,
 	type Contributions,
+	type Experience,
 	type Project,
 	type SupportedLang,
 	type Translations,
@@ -21,6 +22,7 @@ export interface Data {
 	translations: Translations;
 	contributions: Contributions;
 	articles: Articles;
+	experiences?: Experience[];
 	currentLang: string;
 }
 

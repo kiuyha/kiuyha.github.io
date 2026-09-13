@@ -157,7 +157,10 @@ export default function ArticleReaderModal({
 
 							<div className="flex items-center gap-1.5">
 								<Clock size={16} />
-								<span>{readTimeMinutes} min read</span>
+								<span>
+									{readTimeMinutes}{" "}
+									{translations?.["min-read"] || "min read"}
+								</span>
 							</div>
 						</div>
 
@@ -190,7 +193,10 @@ export default function ArticleReaderModal({
 						<div className="mt-12 pt-8 border-t-2 border-zinc-200 dark:border-zinc-700 flex flex-col sm:flex-row items-center justify-between gap-4">
 							<div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
 								<BookOpen size={18} />
-								<span>You've reached the end of this article</span>
+								<span>
+									{translations?.["end-of-article"] ||
+										"You've reached the end of this article"}
+								</span>
 							</div>
 
 							<div className="flex items-center gap-3 w-full sm:w-auto">
@@ -209,7 +215,10 @@ export default function ArticleReaderModal({
 										className="flex-1 sm:flex-initial text-sm font-bold uppercase bg-zinc-200 dark:bg-zinc-700"
 										aria-label="View on Medium"
 									>
-										<span>View on Medium</span>
+										<span>
+											{translations?.["view-on-medium"] ||
+												"View on Medium"}
+										</span>
 										<ExternalLink size={16} />
 									</Button>
 								)}

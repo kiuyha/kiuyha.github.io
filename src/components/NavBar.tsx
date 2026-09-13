@@ -1,5 +1,12 @@
 import { motion, type Variants } from "framer-motion";
-import { FileBadge, GitBranch, User, BookOpen } from "lucide-react";
+import {
+	Home,
+	User,
+	Layers,
+	FileBadge,
+	GitBranch,
+	BookOpen,
+} from "lucide-react";
 import { useData } from "../contexts/DataContext";
 import { useEffect, useRef, useState } from "react";
 
@@ -9,20 +16,15 @@ export default function NavBar() {
 		translations: { navbar: translations },
 	} = useData();
 	const [basePath, setBasePath] = useState("");
-	const [isDesktop, setIsDekstop] = useState<boolean | null>(null);
 
 	useEffect(() => {
-		const handleResize = () => setIsDekstop(window.innerWidth >= 768);
 		const updateBasePath = () =>
 			setBasePath(window.location.pathname.split("/")?.[2] || "");
 
-		handleResize();
 		updateBasePath();
-		window.addEventListener("resize", handleResize);
 		document.addEventListener("astro:page-load", updateBasePath);
 
 		return () => {
-			window.removeEventListener("resize", handleResize);
 			document.removeEventListener("astro:page-load", updateBasePath);
 		};
 	}, []);
@@ -32,33 +34,44 @@ export default function NavBar() {
 			className="z-100 fixed w-full md:w-auto px-6 py-3 bottom-0 md:bottom-10 md:rounded-xl left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-800 shadow-2xl md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
 			border-t-2 md:border-l-2 border-zinc-900 dark:border-zinc-600"
 		>
-			{isDesktop ? (
+			<div className="hidden md:block">
 				<DekstopNavBar
 					currentLang={currentLang}
 					basePath={basePath}
 					translations={translations}
 				/>
-			) : (
+			</div>
+			<div className="block md:hidden">
 				<MobileNavBar
 					currentLang={currentLang}
 					basePath={basePath}
 					translations={translations}
 				/>
-			)}
+			</div>
 		</motion.nav>
 	);
 }
 
 const getMenus = (translations: Record<string, string>) => [
 	{
-		name: translations?.["achievements"] || "Achievements",
-		path: "achievements",
-		Icon: FileBadge,
+		name: translations?.["home"] || "Home",
+		path: "",
+		Icon: Home,
 	},
 	{
 		name: translations?.["profile"] || "Profile",
-		path: "",
+		path: "profile",
 		Icon: User,
+	},
+	{
+		name: translations?.["projects"] || "Projects",
+		path: "projects",
+		Icon: Layers,
+	},
+	{
+		name: translations?.["achievements"] || "Achievements",
+		path: "achievements",
+		Icon: FileBadge,
 	},
 	{
 		name: translations?.["contributions"] || "Contributions",
@@ -108,7 +121,7 @@ function DekstopNavBar({
 	translations: Record<string, string>;
 }) {
 	return (
-		<ul className="flex gap-8 items-center justify-center">
+		<ul className="flex gap-6 lg:gap-8 items-center justify-center">
 			{getMenus(translations).map(({ name, path, Icon }) => (
 				<motion.li
 					key={name}
@@ -119,7 +132,7 @@ function DekstopNavBar({
 				>
 					<motion.div
 						variants={tooltipVariants}
-						className="px-1.5 py-1 absolute -top-12 left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-800 rounded-md border-2 border-zinc-900 dark:border-zinc-300
+						className="px-1.5 py-1 absolute -top-12 left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-800 rounded-md border-2 border-zinc-900 dark:border-zinc-300 pointer-events-none
                             after:content-[''] after:absolute after:-bottom-1/2 after:left-1/2 after:-translate-x-1/2 after:border-8 after:border-transparent after:border-t-zinc-900 dark:after:border-t-zinc-300"
 					>
 						<span className="text-sm font-bold text-nowrap">
@@ -158,53 +171,72 @@ function MobileNavBar({
 	const menusRef = useRef<Record<string, HTMLAnchorElement | null>>({});
 	const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
 
-	// This effect runs whenever the menu changes
 	useEffect(() => {
-		const handleResize = () => {
+		const updateUnderline = () => {
 			const activeMenuNode = menusRef.current[basePath];
-
 			if (activeMenuNode) {
 				setUnderlineStyle({
-					left: activeMenuNode.offsetLeft + 5,
-					width: activeMenuNode.offsetWidth - 10,
+					left: activeMenuNode.offsetLeft + 4,
+					width: activeMenuNode.offsetWidth - 8,
 				});
 			}
 		};
 
-		handleResize();
+		updateUnderline();
+		const timer = setTimeout(updateUnderline, 50);
+		window.addEventListener("resize", updateUnderline);
+		document.addEventListener("astro:page-load", updateUnderline);
 
-		// Add event listener for window resize
-		window.addEventListener("resize", handleResize);
-
-		// Cleanup function to remove the event listener
 		return () => {
-			window.removeEventListener("resize", handleResize);
+			clearTimeout(timer);
+			window.removeEventListener("resize", updateUnderline);
+			document.removeEventListener("astro:page-load", updateUnderline);
 		};
-	}, [basePath, menusRef]);
+	}, [basePath]);
+
 	return (
 		<div className="relative">
-			<ul className="flex items-center justify-between mb-2">
-				{getMenus(translations).map(({ name, path, Icon }) => (
-					<motion.li key={name}>
-						<a
-							ref={(el) => {
-								menusRef.current[path] = el;
-							}}
-							aria-label={name}
-							href={`/${currentLang}${path ? `/${path}` : ""}`}
-							className="flex flex-col items-center"
-						>
-							<Icon size={25} />
-							<span className="text-sm font-bold">{name}</span>
-						</a>
-					</motion.li>
-				))}
+			{/* Option B: Active-Only Label on mobile */}
+			<ul className="flex items-center justify-between mb-1 gap-1">
+				{getMenus(translations).map(({ name, path, Icon }) => {
+					const isActive = basePath === path;
+					return (
+						<li key={name} className="flex-1 flex justify-center min-w-0">
+							<a
+								ref={(el) => {
+									menusRef.current[path] = el;
+								}}
+								aria-label={name}
+								href={`/${currentLang}${path ? `/${path}` : ""}`}
+								className={`flex flex-col items-center justify-center py-1 px-1 transition-all duration-200 ${
+									isActive
+										? "text-zinc-900 dark:text-zinc-100 font-bold"
+										: "text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+								}`}
+							>
+								<Icon size={isActive ? 24 : 22} />
+								{isActive && (
+									<motion.span
+										initial={{ opacity: 0, y: 2 }}
+										animate={{ opacity: 1, y: 0 }}
+										transition={{ duration: 0.15 }}
+										className="text-[10px] font-bold tracking-tight text-center whitespace-nowrap mt-0.5"
+									>
+										{name}
+									</motion.span>
+								)}
+							</a>
+						</li>
+					);
+				})}
 			</ul>
-			{/* Tab Indicator for small screens */}
-			<div
-				className="absolute -bottom-1.5 h-[0.3rem] bg-black dark:bg-white transition-all duration-300 rounded-xl"
-				style={underlineStyle}
-			/>
+			{/* Tab Indicator for active item */}
+			{underlineStyle.width > 0 && (
+				<div
+					className="absolute -bottom-1 h-[0.25rem] bg-zinc-900 dark:bg-white transition-all duration-300 rounded-full"
+					style={underlineStyle}
+				/>
+			)}
 		</div>
 	);
 }

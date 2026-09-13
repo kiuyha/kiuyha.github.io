@@ -5,11 +5,15 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useData } from "../contexts/DataContext";
 
 export default function Header() {
+	const { currentLang } = useData();
 	return (
 		<header className="w-full fixed z-100 bg-white dark:bg-zinc-800 shadow-2xl flex items-center px-8 py-4 justify-between border-b-2 border-zinc-900 dark:border-zinc-600">
-			<span className="font-bold text-2xl">
+			<a
+				href={`/${currentLang}`}
+				className="font-bold text-2xl hover:opacity-80 transition cursor-pointer"
+			>
 				{import.meta.env.PUBLIC_NICKNAME || "Kiuyha"}
-			</span>
+			</a>
 			<div className="flex items-center gap-4">
 				<LanguageSwitcher />
 				<ThemeSwitcher />
@@ -18,7 +22,7 @@ export default function Header() {
 	);
 }
 
-function LanguageSwitcher() {
+export function LanguageSwitcher() {
 	const { supportedLangs, currentLang } = useData();
 	const [isOpen, setIsOpen] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
@@ -94,7 +98,7 @@ function LanguageSwitcher() {
 	);
 }
 
-function ThemeSwitcher() {
+export function ThemeSwitcher() {
 	const { darkMode, setDarkMode } = useTheme();
 
 	return (

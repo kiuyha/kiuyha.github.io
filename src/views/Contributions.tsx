@@ -773,7 +773,7 @@ function RepoCard<T extends Contributions["repositories"][number]>({
 
 				<div className="flex items-center gap-4">
 					<GetStat
-						name={`${translations?.["repo-stars"] || "Stars"}:`}
+						name={`${translations?.["repo-stars"] || translations?.["repo-starts"] || "Stars"}:`}
 						value={data.stars}
 						Icon={Star}
 						className="gap-4"

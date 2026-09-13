@@ -1,6 +1,6 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
-import LandingPage from "../../views/LandingPage";
+import ProfileView from "../../views/Profile";
 import { getSharedStaticPaths, getPageData } from "../../lib/astro";
 
 export const getStaticPaths = getSharedStaticPaths;
@@ -9,15 +9,15 @@ const { lang } = Astro.params;
 const { langInfo } = Astro.props;
 const data = await getPageData(lang, langInfo);
 
-const title = `${import.meta.env.PUBLIC_FULL_NAME} (${import.meta.env.PUBLIC_NICKNAME}) | ${import.meta.env.PUBLIC_TITLE}`;
-const description = `This is portfolio and resume for ${import.meta.env.PUBLIC_FULL_NAME} (${import.meta.env.PUBLIC_NICKNAME})`;
+const title = `${import.meta.env.PUBLIC_FULL_NAME} | ${data.translations?.navbar?.profile || "Profile"}`;
+const description = `This is profile and work experience for ${import.meta.env.PUBLIC_FULL_NAME} (${import.meta.env.PUBLIC_NICKNAME})`;
 ---
 
 <MainLayout
 	initialData={data}
 	title={title}
+	image="/banners/profile.avif"
 	description={description}
-	hideShell={true}
 >
-	<LandingPage client:load data={data} />
+	<ProfileView client:load data={data} />
 </MainLayout>

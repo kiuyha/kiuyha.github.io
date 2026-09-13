@@ -24,6 +24,20 @@ export const BaseAchievementSchema = z.object({
 
 export const AchievementSchema = BaseAchievementSchema.catchall(z.string());
 
+export const BaseExperienceSchema = z.object({
+	role: z.string(),
+	company: z.string(),
+	location: z.string(),
+	type: z.string(),
+	start_date: z.string(),
+	end_date: z.string(),
+	skills: z.array(z.string()),
+	link: z.string(),
+	projects: z.array(z.string()),
+});
+
+export const ExperienceSchema = BaseExperienceSchema.catchall(z.string());
+
 export const SupportedLangSchema = z.object({
 	code: z.string(),
 	name: z.string(),
@@ -155,6 +169,7 @@ export const defaultArticles: Articles = {
 
 export type Project = z.infer<typeof ProjectSchema>;
 export type Achievement = z.infer<typeof AchievementSchema>;
+export type Experience = z.infer<typeof ExperienceSchema>;
 export type SupportedLang = z.infer<typeof SupportedLangSchema>;
 export type Translations = z.infer<typeof TranslationsSchema>;
 export type Contributions = z.infer<typeof ContributionsSchema>;

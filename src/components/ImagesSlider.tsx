@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function ImagesSlider({
 	images,
@@ -12,17 +12,17 @@ export default function ImagesSlider({
 	const [imageLoading, setImageLoading] = useState(true);
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-	const startInterval = () => {
-        // Clear any existing timer
-        if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-        }
-        // Set a new timer
-        intervalRef.current = setInterval(() => {
-            // avoid dependency issues since if we call handleNext directly it will cause an infinite loop
-            setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-        }, 10000);
-    };
+	const startInterval = useCallback(() => {
+		// Clear any existing timer
+		if (intervalRef.current) {
+			clearInterval(intervalRef.current);
+		}
+		// Set a new timer
+		intervalRef.current = setInterval(() => {
+			// avoid dependency issues since if we call handleNext directly it will cause an infinite loop
+			setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+		}, 10000);
+	}, [images]);
 
 	const handlePrevious = () => {
 		setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -57,12 +57,12 @@ export default function ImagesSlider({
             });
         }
         
-        return () => {
-            if (intervalRef.current) {
-                clearInterval(intervalRef.current);
-            }
-        };
-    }, [images]);
+		return () => {
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current);
+			}
+		};
+	}, [images, startInterval]);
 
 	if (!images || images.length === 0) {
 		return null;

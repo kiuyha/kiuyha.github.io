@@ -2,6 +2,7 @@ import {
     fetchSupportedLangs,
     fetchProject,
     fetchAchievements,
+    fetchExperiences,
     fetchTranslations,
 } from "./sheets";
 import { fetchArticles } from "../lib/medium";
@@ -10,6 +11,7 @@ import {
     type Achievement,
     type Articles,
     type Contributions,
+    type Experience,
     type Project,
     type SupportedLang,
 } from "../lib/schemas";
@@ -20,6 +22,7 @@ interface GlobalData {
     achievements: Achievement[];
     contributions: Contributions;
     articles: Articles;
+    experiences: Experience[];
 }
 
 let globalCache: GlobalData | null = null;
@@ -28,16 +31,17 @@ let langsCache: SupportedLang[] | null = null;
 async function getGlobalData() {
     if (globalCache) return globalCache;
 
-    const [projects, achievements, contributions, articles] = await Promise.all(
+    const [projects, achievements, contributions, articles, experiences] = await Promise.all(
         [
             fetchProject(),
             fetchAchievements(),
             fetchContributions(),
             fetchArticles(),
+            fetchExperiences(),
         ],
     );
 
-    globalCache = { projects, achievements, contributions, articles };
+    globalCache = { projects, achievements, contributions, articles, experiences };
     return globalCache;
 }
 

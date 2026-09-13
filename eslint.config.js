@@ -6,7 +6,7 @@ import tseslint from "typescript-eslint";
 import { globalIgnores } from "eslint/config";
 
 export default tseslint.config([
-	globalIgnores(["dist"]),
+	globalIgnores(["dist", ".astro", "node_modules"]),
 	{
 		files: ["**/*.{ts,tsx}"],
 		extends: [
@@ -18,6 +18,9 @@ export default tseslint.config([
 		languageOptions: {
 			ecmaVersion: 2020,
 			globals: globals.browser,
+		},
+		rules: {
+			"react-refresh/only-export-components": "off",
 		},
 	},
 ]);
