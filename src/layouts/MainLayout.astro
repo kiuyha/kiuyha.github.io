@@ -24,35 +24,44 @@ const {
 
 const siteUrl = import.meta.env.PUBLIC_WEBSITE_LINK || "https://kiuyha.dev";
 const githubApi = import.meta.env.PUBLIC_GITHUB_API_LINK;
-const canonicalPath = Astro.url.pathname.replace(/\/$/, "").replace(/\.html$/, "");
-const canonicalUrl = new URL(
-	canonicalPath === "" ? "/" : canonicalPath,
-	siteUrl,
-).href;
+
+const rawPathname = Astro.url.pathname.replace(/\.html$/, "");
+const canonicalPath = rawPathname.endsWith("/")
+	? rawPathname
+	: `${rawPathname}/`;
+const canonicalUrl = new URL(canonicalPath, siteUrl).href;
 
 let alternateLinks: Array<{ lang: string; href: string }> = [];
 if (initialData?.supportedLangs && initialData?.currentLang) {
-	// Remove the current language code from the path (e.g., "/en/articles" becomes "/articles")
-	const basePath = Astro.url.pathname.replace(
+	const pathWithoutLang = Astro.url.pathname.replace(
 		new RegExp(`^/${initialData.currentLang}`),
 		"",
 	);
+	const normalizedBasePath = pathWithoutLang.endsWith("/")
+		? pathWithoutLang
+		: `${pathWithoutLang}/`;
+
 	alternateLinks = initialData.supportedLangs.map((lang) => {
-		const altPath = `/${lang.code}${basePath}`.replace(/\/$/, "");
+		const altPath = `/${lang.code}${normalizedBasePath}`.replace(
+			/\/+/g,
+			"/",
+		);
 		return {
 			lang: lang.code,
-			href: new URL(altPath === "" ? "/" : altPath, siteUrl).href,
+			href: new URL(altPath, siteUrl).href,
 		};
 	});
 
-	// Add the required x-default fallback (Using English as the default)
 	const defaultLang =
 		initialData.supportedLangs.find((l) => l.code === "en") ||
 		initialData.supportedLangs[0];
-	const defaultPath = `/${defaultLang.code}${basePath}`.replace(/\/$/, "");
+	const defaultPath = `/${defaultLang.code}${normalizedBasePath}`.replace(
+		/\/+/g,
+		"/",
+	);
 	alternateLinks.push({
 		lang: "x-default",
-		href: new URL(defaultPath === "" ? "/" : defaultPath, siteUrl).href,
+		href: new URL(defaultPath, siteUrl).href,
 	});
 }
 ---
