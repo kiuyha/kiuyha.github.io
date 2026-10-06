@@ -72,6 +72,14 @@ if (initialData?.supportedLangs && initialData?.currentLang) {
 		<script is:inline>
 			document.documentElement.classList.remove('no-js');
 			document.documentElement.classList.add('js');
+			// Re-apply after every View Transitions swap (registers only once)
+			if (!window.__jsClassSetup) {
+				window.__jsClassSetup = true;
+				document.addEventListener('astro:after-swap', () => {
+					document.documentElement.classList.remove('no-js');
+					document.documentElement.classList.add('js');
+				});
+			}
 		</script>
 		<meta charset="UTF-8" />
 		<link rel="icon" type="image/x-icon" href="/favicon.ico" />

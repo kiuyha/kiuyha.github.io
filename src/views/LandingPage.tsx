@@ -209,7 +209,7 @@ function LandingContent() {
 						<LanguageSwitcher />
 						<ThemeSwitcher />
 						<a
-							href={`/${currentLang}/profile`}
+							href={`/${currentLang}/profile/`}
 							className="cursor-pointer ml-2 px-3.5 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 hover:opacity-90 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition"
 						>
 							<span>
@@ -360,7 +360,7 @@ function LandingContent() {
 				{/* Clear Navigation Callouts */}
 				<section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 					<a
-						href={`/${currentLang}/profile`}
+						href={`/${currentLang}/profile/`}
 						className="group p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-zinc-400 dark:hover:border-zinc-600 shadow-sm transition flex items-center justify-between"
 					>
 						<div className="flex items-center gap-3.5">
@@ -388,7 +388,7 @@ function LandingContent() {
 					</a>
 
 					<a
-						href={`/${currentLang}/projects`}
+						href={`/${currentLang}/projects/`}
 						className="group p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-zinc-400 dark:hover:border-zinc-600 shadow-sm transition flex items-center justify-between"
 					>
 						<div className="flex items-center gap-3.5">
@@ -432,7 +432,7 @@ function LandingContent() {
 								</h2>
 							</div>
 							<a
-								href={`/${currentLang}/profile`}
+								href={`/${currentLang}/profile/`}
 								className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
 							>
 								<span>
@@ -536,7 +536,7 @@ function LandingContent() {
 								</h2>
 							</div>
 							<a
-								href={`/${currentLang}/projects`}
+								href={`/${currentLang}/projects/`}
 								className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
 							>
 								<span>
@@ -748,7 +748,7 @@ function LandingContent() {
 
 					<div className="flex items-center gap-3 shrink-0">
 						<a
-							href={`/${currentLang}/profile`}
+							href={`/${currentLang}/profile/`}
 							className="px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 bg-white text-zinc-900 hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800 transition shadow-sm"
 						>
 							<span>
@@ -758,7 +758,7 @@ function LandingContent() {
 							<ArrowRight size={16} />
 						</a>
 						<a
-							href={`/${currentLang}/projects`}
+							href={`/${currentLang}/projects/`}
 							className="px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 border border-current hover:opacity-80 transition"
 						>
 							<span>

@@ -142,7 +142,7 @@ function DekstopNavBar({
 
 					<a
 						aria-label={name}
-						href={`/${currentLang}${path ? `/${path}` : ""}`}
+						href={`/${currentLang}${path ? `/${path}/` : "/"}`}
 						className={`md:px-2 md:py-2.5 rounded flex flex-col items-center transition-all duration-300
                                 ${
 									basePath === path
@@ -207,7 +207,7 @@ function MobileNavBar({
 									menusRef.current[path] = el;
 								}}
 								aria-label={name}
-								href={`/${currentLang}${path ? `/${path}` : ""}`}
+								href={new URL(`/${currentLang}${path ? `/${path}/` : "/"}`, import.meta.env.PUBLIC_WEBSITE_LINK || "https://kiuyha.dev").href}
 								className={`flex flex-col items-center justify-center py-1 px-1 transition-all duration-200 ${
 									isActive
 										? "text-zinc-900 dark:text-zinc-100 font-bold"
