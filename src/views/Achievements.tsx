@@ -19,6 +19,7 @@ export default function Achievements({ data }: { data: Data }) {
 	const {
 		translations: { achievements: translations, sorting },
 		achievements,
+		currentLang,
 	} = data;
 	const [type, setType] = useState("");
 	const [category, setCategory] = useState("");
@@ -224,6 +225,34 @@ export default function Achievements({ data }: { data: Data }) {
 						}
 					/>
 				)}
+				seoDetail={(achievement) => {
+					const description =
+						(achievement[`description_${currentLang}`] as string) ||
+						(achievement.description as string) ||
+						"";
+					return (
+						<details className="text-left text-xs text-zinc-700 dark:text-zinc-300">
+							<summary className="font-bold cursor-pointer hover:underline mb-2">
+								{translations?.["description"] || "Description"}
+							</summary>
+							<p className="whitespace-pre-line leading-relaxed mb-3">
+								{description}
+							</p>
+							{achievement.skills && achievement.skills.length > 0 && (
+								<div className="flex flex-wrap gap-1">
+									{achievement.skills.map((skill) => (
+										<span
+											key={skill}
+											className="font-mono text-[10px] px-1.5 py-0.5 border border-zinc-400 dark:border-zinc-600 bg-white dark:bg-zinc-900 rounded"
+										>
+											{skill}
+										</span>
+									))}
+								</div>
+							)}
+						</details>
+					);
+				}}
 			/>
 		</DataProvider>
 	);

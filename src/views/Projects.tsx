@@ -24,6 +24,7 @@ export default function ProjectsView({ data }: { data: Data }) {
 function ProjectsContent() {
 	const {
 		projects,
+		currentLang,
 		translations: { projects: translations, sorting },
 	} = useData();
 	const [type, setType] = useState("");
@@ -190,6 +191,34 @@ function ProjectsContent() {
 					}
 				/>
 			)}
+			seoDetail={(project) => {
+				const description =
+					(project[`description_${currentLang}`] as string) ||
+					(project.description as string) ||
+					"";
+				return (
+					<details className="text-left text-xs text-zinc-700 dark:text-zinc-300">
+						<summary className="font-bold cursor-pointer hover:underline mb-2">
+							{translations?.["description"] || "Description"}
+						</summary>
+						<p className="whitespace-pre-line leading-relaxed mb-3">
+							{description}
+						</p>
+						{project.tech_stack && project.tech_stack.length > 0 && (
+							<div className="flex flex-wrap gap-1">
+								{project.tech_stack.map((tech) => (
+									<span
+										key={tech}
+										className="font-mono text-[10px] px-1.5 py-0.5 border border-zinc-400 dark:border-zinc-600 bg-white dark:bg-zinc-900 rounded"
+									>
+										{tech}
+									</span>
+								))}
+							</div>
+						)}
+					</details>
+				);
+			}}
 		/>
 	);
 }

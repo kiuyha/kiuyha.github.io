@@ -9,11 +9,53 @@ html.no-js astro-island[component-url*="LoadingScreen"] {
 }
 
 html.no-js body * {
-	opacity: 1 !important;
 	transform: none !important;
 	filter: none !important;
 	visibility: visible !important;
 }
+
+/* Reset opacity only on non-overlay elements so overlays don't turn permanently black */
+html.no-js body *:not(.card-hover-overlay *):not(.navbar-tooltip):not(.navbar-tooltip *) {
+	opacity: 1 !important;
+}
+
+/* Hover overlay: keep completely hidden in no-js unless actively hovered, thumbnail stays clearly visible */
+html.no-js .card-hover-overlay > div:first-child {
+	opacity: 0 !important;
+}
+html.no-js .group:hover .card-hover-overlay > div:first-child {
+	opacity: 0.5 !important;
+}
+html.no-js .card-hover-overlay > div:last-child {
+	opacity: 0 !important;
+}
+html.no-js .group:hover .card-hover-overlay > div:last-child {
+	opacity: 1 !important;
+}
+
+/* Thumbnails: ensure visible and hide pulse skeleton in no-js */
+html.no-js img {
+	opacity: 1 !important;
+}
+
+html.no-js .animate-pulse {
+	display: none !important;
+}
+
+/* Remove tooltip in navbar when JavaScript is disabled */
+html.no-js .navbar-tooltip {
+	display: none !important;
+}
+
+/* SEO Details: hidden in JS (since JS uses rich popups/modals), but rendered in HTML for Googlebot and expandable via <details> in no-js */
+html.js .seo-details {
+	display: none !important;
+}
+
+html.no-js .seo-details {
+	display: block !important;
+}
+
 
 /* Article Reader Typography */
 .article-prose {

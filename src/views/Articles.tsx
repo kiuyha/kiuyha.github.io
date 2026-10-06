@@ -312,6 +312,28 @@ function MediumCard<T extends Articles["items"][number]>({
 					</Button>
 				)}
 			</div>
+
+			{/* SEO and No-JS Crawlable Detail Fallback */}
+			<div className="seo-details border-t-2 border-zinc-900 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-800 p-4">
+				<details className="text-left text-xs text-zinc-700 dark:text-zinc-300">
+					<summary className="font-bold cursor-pointer hover:underline mb-2">
+						{translations?.["read"] || "Article Summary"}
+					</summary>
+					<div className="leading-relaxed mb-3">
+						{data.description || "No description provided"}
+					</div>
+					{data.link && (
+						<a
+							href={data.link}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="text-blue-600 dark:text-blue-400 underline font-semibold"
+						>
+							{translations?.["view-on-medium"] || "Read full article on Medium"} &rarr;
+						</a>
+					)}
+				</details>
+			</div>
 		</motion.div>
 	);
 }

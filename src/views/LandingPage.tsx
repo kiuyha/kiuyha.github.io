@@ -725,6 +725,30 @@ function LandingContent() {
 													)}
 												</div>
 											</div>
+
+											{/* SEO and No-JS Crawlable Detail Fallback */}
+											<div className="seo-details border-t border-zinc-200 dark:border-zinc-800 pt-3">
+												<details className="text-left text-xs text-zinc-700 dark:text-zinc-300">
+													<summary className="font-bold cursor-pointer hover:underline mb-2">
+														{landingTranslations?.["details"] || "Details"}
+													</summary>
+													<p className="whitespace-pre-line leading-relaxed mb-2">
+														{project.description}
+													</p>
+													{project.tech_stack && project.tech_stack.length > 0 && (
+														<div className="flex flex-wrap gap-1">
+															{project.tech_stack.map((tech) => (
+																<span
+																	key={tech}
+																	className="font-mono text-[10px] px-1.5 py-0.5 border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 rounded"
+																>
+																	{tech}
+																</span>
+															))}
+														</div>
+													)}
+												</details>
+											</div>
 										</div>
 									</div>
 								);

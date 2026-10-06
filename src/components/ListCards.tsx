@@ -51,11 +51,13 @@ interface ListCardsProps<TData extends Record<string, unknown>> {
 			data: TData,
 			setOpenModal: React.Dispatch<React.SetStateAction<boolean>>,
 		) => React.ReactNode,
+		seoDetail?: (data: TData) => React.ReactNode,
 	) => React.ReactNode;
 	modal?: (
 		data: TData,
 		setOpenModal: React.Dispatch<React.SetStateAction<boolean>>,
 	) => React.ReactNode;
+	seoDetail?: (data: TData) => React.ReactNode;
 }
 
 function getValueByPath(
@@ -97,6 +99,7 @@ export default function ListCards<TData extends Record<string, unknown>>({
 	cardConfig,
 	CustomCard,
 	modal,
+	seoDetail,
 }: ListCardsProps<TData>) {
 	const titleCardKey =
 		cardConfig && (cardConfig.titleField as string | undefined);
@@ -275,7 +278,7 @@ export default function ListCards<TData extends Record<string, unknown>>({
 						if (CustomCard) {
 							return (
 								<React.Fragment key={key}>
-									{CustomCard(data, index, search, modal)}
+									{CustomCard(data, index, search, modal, seoDetail)}
 								</React.Fragment>
 							);
 						}
@@ -286,6 +289,7 @@ export default function ListCards<TData extends Record<string, unknown>>({
 									data={data}
 									index={index}
 									modal={modal}
+									seoDetail={seoDetail}
 									search={search}
 									cardConfig={cardConfig}
 									titleCardKey={titleCardKey}
@@ -525,6 +529,7 @@ interface CardProps<T extends Record<string, unknown>> {
 	data: ListCardsProps<T>["dataSet"][number];
 	index: number;
 	modal?: ListCardsProps<T>["modal"];
+	seoDetail?: ListCardsProps<T>["seoDetail"];
 	search: string;
 	cardConfig: CardConfig<T>;
 	titleCardKey: string | undefined;
@@ -534,6 +539,7 @@ function Card<T extends Record<string, unknown>>({
 	data,
 	index,
 	modal,
+	seoDetail,
 	search,
 	cardConfig,
 	titleCardKey,
@@ -602,14 +608,14 @@ function Card<T extends Record<string, unknown>>({
 
 				{/* Overlay on hover */}
 				{titleCardKey && (data?.[titleCardKey] as string) && (
-					<>
+					<div className="card-hover-overlay">
 						<div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity duration-300" />
 						<div className="absolute inset-0 flex items-center justify-center text-white text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer">
 							<span className="font-bold text-xl text-center uppercase">
 								{data?.[titleCardKey] as string}
 							</span>
 						</div>
-					</>
+					</div>
 				)}
 			</div>
 
@@ -631,6 +637,13 @@ function Card<T extends Record<string, unknown>>({
 						{cardConfig.buttons.rightButton &&
 							cardConfig.buttons.rightButton(data, setOpenModal)}
 					</div>
+				</div>
+			)}
+
+			{/* SEO and No-JS Crawlable Detail Fallback */}
+			{seoDetail && (
+				<div className="seo-details border-t-2 border-zinc-900 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-800 p-4">
+					{seoDetail(data)}
 				</div>
 			)}
 

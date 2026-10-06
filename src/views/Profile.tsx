@@ -861,6 +861,27 @@ function ExperienceCardItem({
 					))}
 				</div>
 			)}
+
+			{/* SEO and No-JS Crawlable Detail Fallback */}
+			{connectedProjects.length > 0 && (
+				<div className="seo-details border-t border-zinc-900/10 dark:border-zinc-700 pt-2 text-xs">
+					{connectedProjects.map((p) => (
+						<details key={p.name} className="text-zinc-700 dark:text-zinc-300 mb-2">
+							<summary className="font-bold cursor-pointer hover:underline mb-1">
+								{p.name} — {p.type}
+							</summary>
+							<p className="whitespace-pre-line leading-relaxed mb-1">
+								{(p[`description_${currentLang}`] as string) || (p.description as string) || ""}
+							</p>
+							{p.tech_stack && p.tech_stack.length > 0 && (
+								<p className="font-mono text-[11px] text-zinc-500">
+									Stack: {p.tech_stack.join(", ")}
+								</p>
+							)}
+						</details>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }

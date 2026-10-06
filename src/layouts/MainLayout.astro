@@ -122,10 +122,46 @@ if (initialData?.supportedLangs && initialData?.currentLang) {
 
 				/* Reset any inline opacity/transform styles applied during SSR by framer-motion */
 				body * {
-					opacity: 1 !important;
 					transform: none !important;
 					filter: none !important;
 					visibility: visible !important;
+				}
+
+				/* Reset opacity only on non-overlay elements */
+				body *:not(.card-hover-overlay *):not(.navbar-tooltip):not(.navbar-tooltip *) {
+					opacity: 1 !important;
+				}
+
+				/* Hover overlay: keep hidden unless hovered */
+				.card-hover-overlay > div:first-child {
+					opacity: 0 !important;
+				}
+				.group:hover .card-hover-overlay > div:first-child {
+					opacity: 0.5 !important;
+				}
+				.card-hover-overlay > div:last-child {
+					opacity: 0 !important;
+				}
+				.group:hover .card-hover-overlay > div:last-child {
+					opacity: 1 !important;
+				}
+
+				/* Show thumbnails and hide skeleton pulse when JavaScript is disabled */
+				img {
+					opacity: 1 !important;
+				}
+				.animate-pulse {
+					display: none !important;
+				}
+
+				/* Remove tooltip in navbar when JavaScript is disabled */
+				.navbar-tooltip {
+					display: none !important;
+				}
+
+				/* Show SEO details when JavaScript is disabled */
+				.seo-details {
+					display: block !important;
 				}
 			</style>
 		</noscript>
