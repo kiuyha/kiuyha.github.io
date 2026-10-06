@@ -67,13 +67,17 @@ if (initialData?.supportedLangs && initialData?.currentLang) {
 ---
 
 <!doctype html>
-<html lang={initialData?.currentLang || "en"}>
+<html lang={initialData?.currentLang || "en"} class="no-js">
 	<head>
+		<script is:inline>
+			document.documentElement.classList.remove('no-js');
+			document.documentElement.classList.add('js');
+		</script>
 		<meta charset="UTF-8" />
 		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-		<link rel="sitemap" href="/sitemap.xml" />
+		<link rel="sitemap" type="application/xml" title="Sitemap" href={new URL("sitemap.xml", siteUrl)} />
 
 		<link rel="canonical" href={canonicalUrl} />
 		{
@@ -100,6 +104,23 @@ if (initialData?.supportedLangs && initialData?.currentLang) {
 		<link rel="preconnect" href="https://api.rss2json.com" crossorigin />
 
 		<ClientRouter />
+		<noscript>
+			<style>
+				/* Hide loading screen immediately if JavaScript is disabled */
+				#loading-screen,
+				astro-island[component-url*="LoadingScreen"] {
+					display: none !important;
+				}
+
+				/* Reset any inline opacity/transform styles applied during SSR by framer-motion */
+				body * {
+					opacity: 1 !important;
+					transform: none !important;
+					filter: none !important;
+					visibility: visible !important;
+				}
+			</style>
+		</noscript>
 	</head>
 	<body class="bg-primary text-black dark:text-white relative min-h-screen">
 		<LoadingScreen

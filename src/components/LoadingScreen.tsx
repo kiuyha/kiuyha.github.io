@@ -39,7 +39,10 @@ export default function LoadingScreen({ translations }: LoadingScreenProps) {
 	if (!isVisible) return null;
 
 	return (
-		<div className="inset-0 fixed z-999 flex items-center justify-center min-h-screen bg-gray-100 dark:bg-zinc-900">
+		<div
+			id="loading-screen"
+			className="inset-0 fixed z-999 flex items-center justify-center min-h-screen bg-gray-100 dark:bg-zinc-900"
+		>
 			<div className="flex flex-col items-center text-black dark:text-white">
 				{imgError ? (
 					<LoaderCircle size={100} className="animate-spin mb-4" />

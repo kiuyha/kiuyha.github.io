@@ -16,7 +16,7 @@ const description = `This is a web for ${import.meta.env.PUBLIC_FULL_NAME} (${im
 		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-		<link rel="sitemap" href="/sitemap.xml" />
+		<link rel="sitemap" type="application/xml" title="Sitemap" href={`${siteUrl}/sitemap.xml`} />
 
 		{
 			supportedLangs.map((lang) => (
@@ -29,20 +29,67 @@ const description = `This is a web for ${import.meta.env.PUBLIC_FULL_NAME} (${im
 		}
 		<link rel="alternate" hreflang="x-default" href={`${siteUrl}/en`} />
 		<link rel="canonical" href={`${siteUrl}`} />
+		<noscript>
+			<meta http-equiv="refresh" content="0;url=/en/" />
+			<style>
+				body {
+					margin: 0;
+					padding: 2rem;
+					font-family: system-ui, -apple-system, sans-serif;
+					background-color: #fafafa;
+					color: #18181b;
+				}
+				.lang-container {
+					max-width: 480px;
+					margin: 4rem auto;
+					padding: 2rem;
+					background: #ffffff;
+					border: 2px solid #18181b;
+					box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+					border-radius: 8px;
+				}
+				.lang-list {
+					list-style: none;
+					padding: 0;
+					margin: 1.5rem 0 0;
+					display: flex;
+					flex-direction: column;
+					gap: 0.75rem;
+				}
+				.lang-link {
+					display: block;
+					padding: 0.75rem 1rem;
+					background: #f4f4f5;
+					color: #18181b;
+					text-decoration: none;
+					font-weight: 600;
+					border: 2px solid #18181b;
+					border-radius: 6px;
+					transition: transform 0.1s;
+				}
+				.lang-link:hover {
+					background: #e4e4e7;
+					transform: translate(-2px, -2px);
+					box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+				}
+			</style>
+		</noscript>
 	</head>
 	<body>
-		<div style="padding: 2rem; font-family: sans-serif;">
-			<h1>Please select your language:</h1>
-			<ul>
-				{
-					supportedLangs.map((lang) => (
-						<li>
-							<a href={`/${lang.code}`}>{lang.name}</a>
-						</li>
-					))
-				}
-			</ul>
-		</div>
+		<noscript>
+			<div class="lang-container">
+				<h1 style="font-size: 1.25rem; margin: 0;">Please select your language / Silakan pilih bahasa:</h1>
+				<ul class="lang-list">
+					{
+						supportedLangs.map((lang) => (
+							<li>
+								<a class="lang-link" href={`/${lang.code}/`}>{lang.name}</a>
+							</li>
+						))
+					}
+				</ul>
+			</div>
+		</noscript>
 		<script is:inline define:vars={{ supportedLangs }}>
 			const userLang = navigator.language.split("-")[0];
 			const defaultCode = supportedLangs[0]?.code || "en";
@@ -52,7 +99,7 @@ const description = `This is a web for ${import.meta.env.PUBLIC_FULL_NAME} (${im
 				? userLang
 				: defaultCode;
 
-			window.location.replace(`/${langToRedirect}`);
+			window.location.replace(`/${langToRedirect}/`);
 		</script>
 	</body>
 </html>

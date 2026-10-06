@@ -2,6 +2,19 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Fallbacks when JavaScript is not enabled */
+html.no-js #loading-screen,
+html.no-js astro-island[component-url*="LoadingScreen"] {
+	display: none !important;
+}
+
+html.no-js body * {
+	opacity: 1 !important;
+	transform: none !important;
+	filter: none !important;
+	visibility: visible !important;
+}
+
 /* Article Reader Typography */
 .article-prose {
 	color: #27272a; /* zinc-800 */
