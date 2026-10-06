@@ -28,6 +28,8 @@ jobs:
         steps:
             - name: Check out the code
               uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
             - name: Set up bun
               uses: oven-sh/setup-bun@v2
